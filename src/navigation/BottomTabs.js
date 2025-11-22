@@ -3,7 +3,13 @@ import {View, Image, StyleSheet} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import LinearGradient from 'react-native-linear-gradient';
 import {RFValue} from 'react-native-responsive-fontsize';
-import {Courses, Exams, Home, Profile} from '../screens/appScreens';
+import {
+  Courses,
+  Exams,
+  Home,
+  Profile,
+  QuestionBank,
+} from '../screens/appScreens';
 import {COLORS, icons, FONTS, SIZES} from '../constants';
 
 const BottomTab = createBottomTabNavigator();
@@ -113,15 +119,15 @@ export default function BottomTabs() {
       }}>
       {/* Home Tab 1 */}
       <BottomTab.Screen
-        name={'Home'}
-        component={Home}
+        name={'QuestionBank'}
+        component={QuestionBank}
         options={{
           tabBarLabel: () => null,
           tabBarIcon: ({focused}) => (
             <TabIcon
               focused={focused}
-              icon={icons.home2}
-              icon2={icons.home}
+              icon={icons.bank}
+              icon2={icons.bank2}
               label=""
             />
           ),

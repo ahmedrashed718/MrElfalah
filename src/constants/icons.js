@@ -7,6 +7,9 @@ const book1 = require('../assets/icons/bookB1.png');
 const book2 = require('../assets/icons/book.png');
 const exam = require('../assets/icons/exam.png');
 const exam2 = require('../assets/icons/exam2.png');
+const bank = require('../assets/icons/bank.png');
+const bank2 = require('../assets/icons/bank2.png');
+
 export default {
   book1,
   book2,
@@ -17,4 +20,6 @@ export default {
   logout,
   exam,
   exam2,
+  bank,
+  bank2,
 };

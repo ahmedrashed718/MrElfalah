@@ -1,12 +1,14 @@
 import React from 'react';
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import {RFValue} from 'react-native-responsive-fontsize';
-import {ScreensContainer} from '../../../components';
+import {AppHeader, ScreensContainer} from '../../../components';
 import {FONTS} from '../../../constants';
 
 export default function QuestionBank() {
   return (
     <ScreensContainer>
+      <AppHeader title={'بنك الاسئلة'} showBack={false} />
+
       <View style={styles.container}>
         <Text style={styles.title}>بنك الاسئله</Text>
       </View>
