@@ -153,7 +153,7 @@ export default function BottomTabs() {
 
       {/* Middle Subscribe Button */}
       <BottomTab.Screen
-        name={'الاختبارات'}
+        name={'Home'}
         component={Home}
         options={{
           tabBarLabel: () => null,
