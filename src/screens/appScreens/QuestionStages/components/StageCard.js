@@ -18,14 +18,13 @@ export default function StageCard({item, index, gradient, number, onPress}) {
     }, 200);
   };
 
-  // Icon mapping for different stages - matching the image design
   const getIconName = index => {
     const icons = [
-      'document-text-outline', // Unit 1 - document
-      'help-circle-outline', // Unit 2 - question mark
-      'star-outline', // Unit 3 - star
-      'telescope-outline', // Unit 4 - telescope
-      'film-outline', // Unit 5 - film reel
+      'document-text-outline',
+      'film-outline',
+      'star-outline',
+      'telescope-outline',
+      'film-outline',
     ];
     return icons[index % icons.length];
   };
@@ -43,16 +42,7 @@ export default function StageCard({item, index, gradient, number, onPress}) {
           <View style={styles.cardContent}>
             {/* Top Section with Icon and Badge */}
             <View style={styles.topSection}>
-              {/* Number Badge - Right */}
-              <LinearGradient
-                colors={gradient}
-                start={{x: 0, y: 0}}
-                end={{x: 1, y: 1}}
-                style={styles.numberBadge}>
-                <Text style={styles.numberText}>المرحلة {number}</Text>
-              </LinearGradient>
-
-              {/* Icon - Left */}
+              {/* Icon - Right */}
               <View style={styles.iconContainer}>
                 <Ionicons
                   name={getIconName(index)}
@@ -61,6 +51,14 @@ export default function StageCard({item, index, gradient, number, onPress}) {
                   style={styles.icon}
                 />
               </View>
+              {/* Number Badge */}
+              <LinearGradient
+                colors={gradient}
+                start={{x: 0, y: 0}}
+                end={{x: 1, y: 1}}
+                style={styles.numberBadge}>
+                <Text style={styles.numberText}>الوحدة {number}</Text>
+              </LinearGradient>
             </View>
 
             {/* Main Title */}
@@ -140,7 +138,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row-reverse',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: RFValue(16),
+    marginBottom: RFValue(5),
     paddingTop: RFValue(4),
   },
 
@@ -157,8 +155,8 @@ const styles = StyleSheet.create({
 
   numberBadge: {
     width: RFValue(80),
-    height: RFValue(38),
-    borderRadius: RFValue(19),
+    height: RFValue(50),
+    borderRadius: RFValue(25),
     alignItems: 'center',
     justifyContent: 'center',
     elevation: RFValue(6),
@@ -181,7 +179,7 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: RFValue(18),
     color: COLORS.black,
-    marginBottom: RFValue(14),
+    marginBottom: RFValue(5),
     minHeight: RFValue(50),
     textAlign: 'center',
     lineHeight: RFValue(26),
@@ -223,7 +221,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: RFValue(14),
+    paddingVertical: RFValue(8),
     paddingHorizontal: RFValue(12),
     gap: RFValue(8),
   },
@@ -240,4 +238,3 @@ const styles = StyleSheet.create({
     marginHorizontal: RFValue(4),
   },
 });
-
