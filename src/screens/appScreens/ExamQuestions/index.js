@@ -19,14 +19,14 @@ const {width} = Dimensions.get('window');
 const sampleQuestions = [
   {
     id: 1,
-    question:
-      'The Nile .......................... is a very long river in Egypt. 🤔',
+    question: 'The Nile .......................... is a very long river in Egypt. 🤔',
     options: [
       {id: 'A', text: 'River'},
       {id: 'B', text: 'Lake'},
       {id: 'C', text: 'Sea'},
       {id: 'D', text: 'Oasis'},
     ],
+    correctAnswer: 'A',
   },
   {
     id: 2,
@@ -37,8 +37,98 @@ const sampleQuestions = [
       {id: 'C', text: 'Giza'},
       {id: 'D', text: 'Luxor'},
     ],
+    correctAnswer: 'A',
+  },
+  {
+    id: 3,
+    question: 'Which animal is known as the king of the jungle?',
+    options: [
+      {id: 'A', text: 'Elephant'},
+      {id: 'B', text: 'Lion'},
+      {id: 'C', text: 'Tiger'},
+      {id: 'D', text: 'Cheetah'},
+    ],
+    correctAnswer: 'B',
+  },
+  {
+    id: 4,
+    question: 'How many days are there in a week?',
+    options: [
+      {id: 'A', text: '5'},
+      {id: 'B', text: '6'},
+      {id: 'C', text: '7'},
+      {id: 'D', text: '8'},
+    ],
+    correctAnswer: 'C',
+  },
+  {
+    id: 5,
+    question: 'Which planet is called the Red Planet?',
+    options: [
+      {id: 'A', text: 'Earth'},
+      {id: 'B', text: 'Mars'},
+      {id: 'C', text: 'Jupiter'},
+      {id: 'D', text: 'Venus'},
+    ],
+    correctAnswer: 'B',
+  },
+  {
+    id: 6,
+    question: 'Which shape has 3 sides?',
+    options: [
+      {id: 'A', text: 'Square'},
+      {id: 'B', text: 'Circle'},
+      {id: 'C', text: 'Triangle'},
+      {id: 'D', text: 'Rectangle'},
+    ],
+    correctAnswer: 'C',
+  },
+  {
+    id: 7,
+    question: 'What do plants need to grow?',
+    options: [
+      {id: 'A', text: 'Sunlight'},
+      {id: 'B', text: 'Stone'},
+      {id: 'C', text: 'Sand'},
+      {id: 'D', text: 'Metal'},
+    ],
+    correctAnswer: 'A',
+  },
+  {
+    id: 8,
+    question: 'How many letters are there in the English alphabet?',
+    options: [
+      {id: 'A', text: '24'},
+      {id: 'B', text: '25'},
+      {id: 'C', text: '26'},
+      {id: 'D', text: '27'},
+    ],
+    correctAnswer: 'C',
+  },
+  {
+    id: 9,
+    question: 'What color is the sky on a clear day?',
+    options: [
+      {id: 'A', text: 'Green'},
+      {id: 'B', text: 'Blue'},
+      {id: 'C', text: 'Red'},
+      {id: 'D', text: 'Black'},
+    ],
+    correctAnswer: 'B',
+  },
+  {
+    id: 10,
+    question: 'Which one is a fruit?',
+    options: [
+      {id: 'A', text: 'Carrot'},
+      {id: 'B', text: 'Potato'},
+      {id: 'C', text: 'Apple'},
+      {id: 'D', text: 'Broccoli'},
+    ],
+    correctAnswer: 'C',
   },
 ];
+
 
 export default function ExamQuestion({route, navigation}) {
   const {examTitle} = route.params || {};
@@ -50,9 +140,11 @@ export default function ExamQuestion({route, navigation}) {
   const progressAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
-  const totalQuestions = 12;
+  // Get questions from route params or use sample questions
+  const questions = route.params?.questions || sampleQuestions;
+  const totalQuestions = questions.length;
   const currentQuestion =
-    sampleQuestions[currentQuestionIndex] || sampleQuestions[0];
+    questions[currentQuestionIndex] || questions[0];
 
   // Timer
   useEffect(() => {
@@ -76,7 +168,8 @@ export default function ExamQuestion({route, navigation}) {
       duration: 300,
       useNativeDriver: false,
     }).start();
-  }, [currentQuestionIndex]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentQuestionIndex, totalQuestions]);
 
   const formatTime = seconds => {
     const mins = Math.floor(seconds / 60);
@@ -117,8 +210,18 @@ export default function ExamQuestion({route, navigation}) {
   };
 
   const handleQuestionSelect = index => {
-    setCurrentQuestionIndex(index);
-    setShowSidePanel(false);
+    if (index >= 0 && index < totalQuestions) {
+      setCurrentQuestionIndex(index);
+      setShowSidePanel(false);
+    }
+  };
+
+  const handleFinishExam = () => {
+    // Handle exam finish logic here
+    // You can navigate to results screen or show a confirmation dialog
+    console.log('Exam finished!', selectedAnswers);
+    // Example: navigation.navigate('ExamResults', { answers: selectedAnswers });
+    alert('تم إنهاء الامتحان بنجاح!');
   };
 
   const progressWidth = progressAnim.interpolate({
@@ -294,41 +397,43 @@ export default function ExamQuestion({route, navigation}) {
               </Text>
             </TouchableOpacity>
 
-            <TouchableOpacity
-              style={[
-                styles.nextButton,
-                currentQuestionIndex >= totalQuestions - 1 &&
-                  styles.buttonDisabled,
-              ]}
-              onPress={handleNext}
-              disabled={currentQuestionIndex >= totalQuestions - 1}>
-              <LinearGradient
-                colors={
-                  currentQuestionIndex >= totalQuestions - 1
-                    ? ['#ccc', '#ccc']
-                    : ['#667EEA', '#764BA2']
-                }
-                start={{x: 0, y: 0}}
-                end={{x: 1, y: 1}}
-                style={styles.nextButtonGradient}>
-                <Text
-                  style={[
-                    styles.nextButtonText,
-                    currentQuestionIndex >= totalQuestions - 1 &&
-                      styles.buttonDisabledText,
-                  ]}>
-                  التالي
-                </Text>
-
-                <Ionicons
-                  name="arrow-back"
-                  size={RFValue(20)}
-                  color={
-                    currentQuestionIndex >= totalQuestions - 1 ? '#999' : '#fff'
-                  }
-                />
-              </LinearGradient>
-            </TouchableOpacity>
+            {currentQuestionIndex >= totalQuestions - 1 ? (
+              // Finish Exam Button (Green)
+              <TouchableOpacity
+                style={styles.finishButton}
+                onPress={handleFinishExam}>
+                <LinearGradient
+                  colors={['#4CAF50', '#45a049']}
+                  start={{x: 0, y: 0}}
+                  end={{x: 1, y: 1}}
+                  style={styles.finishButtonGradient}>
+                  <Ionicons
+                    name="checkmark-circle"
+                    size={RFValue(20)}
+                    color="#fff"
+                  />
+                  <Text style={styles.finishButtonText}>إنهاء الامتحان</Text>
+                </LinearGradient>
+              </TouchableOpacity>
+            ) : (
+              // Next Button
+              <TouchableOpacity
+                style={styles.nextButton}
+                onPress={handleNext}>
+                <LinearGradient
+                  colors={['#667EEA', '#764BA2']}
+                  start={{x: 0, y: 0}}
+                  end={{x: 1, y: 1}}
+                  style={styles.nextButtonGradient}>
+                  <Text style={styles.nextButtonText}>التالي</Text>
+                  <Ionicons
+                    name="arrow-back"
+                    size={RFValue(20)}
+                    color="#fff"
+                  />
+                </LinearGradient>
+              </TouchableOpacity>
+            )}
           </View>
         </View>
       </ScrollView>
@@ -347,15 +452,15 @@ export default function ExamQuestion({route, navigation}) {
             </TouchableOpacity>
           </View>
 
-          <View style={styles.questionsGrid}>
-            {Array.from({length: totalQuestions}, (_, i) => i + 1).map(
-              (num, index) => {
+          <ScrollView style={styles.questionsGridScroll}>
+            <View style={styles.questionsGrid}>
+              {questions.map((question, index) => {
                 const isCurrent = index === currentQuestionIndex;
-                const isAnswered = selectedAnswers[sampleQuestions[index]?.id];
+                const isAnswered = selectedAnswers[question?.id];
 
                 return (
                   <TouchableOpacity
-                    key={num}
+                    key={question.id || index}
                     style={[
                       styles.questionNumberButton,
                       isCurrent && styles.questionNumberButtonActive,
@@ -369,11 +474,82 @@ export default function ExamQuestion({route, navigation}) {
                         styles.questionNumberText,
                         isCurrent && styles.questionNumberTextActive,
                       ]}>
-                      {num}
+                      {index + 1}
                     </Text>
                   </TouchableOpacity>
                 );
-              },
+              })}
+            </View>
+          </ScrollView>
+
+          {/* Navigation Buttons in Side Panel */}
+          <View style={styles.sidePanelNavigation}>
+            {/* Previous Button */}
+            <TouchableOpacity
+              style={[
+                styles.sidePanelButtonFull,
+                currentQuestionIndex === 0 && styles.sidePanelButtonDisabled,
+              ]}
+              onPress={() => {
+                handlePrevious();
+              }}
+              disabled={currentQuestionIndex === 0}>
+              <Ionicons
+                name="arrow-forward"
+                size={RFValue(18)}
+                color={currentQuestionIndex === 0 ? '#ccc' : '#333'}
+              />
+              <Text
+                style={[
+                  styles.sidePanelButtonText,
+                  currentQuestionIndex === 0 && styles.sidePanelButtonTextDisabled,
+                ]}>
+                السابق
+              </Text>
+            </TouchableOpacity>
+
+            {/* Next or Finish Button */}
+            {currentQuestionIndex >= totalQuestions - 1 ? (
+              <TouchableOpacity
+                style={styles.sidePanelFinishButtonFull}
+                onPress={() => {
+                  handleFinishExam();
+                  setShowSidePanel(false);
+                }}>
+                <LinearGradient
+                  colors={['#4CAF50', '#45a049']}
+                  start={{x: 0, y: 0}}
+                  end={{x: 1, y: 1}}
+                  style={styles.sidePanelFinishButtonGradient}>
+                  <Ionicons
+                    name="checkmark-circle"
+                    size={RFValue(18)}
+                    color="#fff"
+                  />
+                  <Text style={styles.sidePanelFinishButtonText}>
+                    إنهاء الامتحان
+                  </Text>
+                </LinearGradient>
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity
+                style={styles.sidePanelNextButtonFull}
+                onPress={() => {
+                  handleNext();
+                }}>
+                <LinearGradient
+                  colors={['#667EEA', '#764BA2']}
+                  start={{x: 0, y: 0}}
+                  end={{x: 1, y: 1}}
+                  style={styles.sidePanelNextButtonGradient}>
+                  <Text style={styles.sidePanelNextButtonText}>التالي</Text>
+                  <Ionicons
+                    name="arrow-back"
+                    size={RFValue(18)}
+                    color="#fff"
+                  />
+                </LinearGradient>
+              </TouchableOpacity>
             )}
           </View>
         </View>
@@ -665,6 +841,27 @@ const styles = StyleSheet.create({
     ...FONTS.body4,
   },
 
+  finishButton: {
+    flex: 1,
+    borderRadius: RFValue(12),
+    overflow: 'hidden',
+  },
+
+  finishButtonGradient: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: RFValue(14),
+  },
+
+  finishButtonText: {
+    color: '#fff',
+    fontSize: RFValue(14),
+    marginLeft: RFValue(8),
+    ...FONTS.body4,
+    fontWeight: 'bold',
+  },
+
   buttonDisabled: {
     opacity: 0.6,
   },
@@ -683,6 +880,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: RFValue(8),
     zIndex: 100,
+    flexDirection: 'column',
   },
 
   sidePanelHeader: {
@@ -698,6 +896,10 @@ const styles = StyleSheet.create({
     fontSize: RFValue(14),
     color: COLORS.secondary,
     ...FONTS.body3,
+  },
+
+  questionsGridScroll: {
+    flex: 1,
   },
 
   questionsGrid: {
@@ -733,6 +935,115 @@ const styles = StyleSheet.create({
   questionNumberTextActive: {
     color: '#fff',
     ...FONTS.body4,
+  },
+
+  /* ===== SIDE PANEL NAVIGATION BUTTONS ===== */
+  sidePanelNavigation: {
+    flexDirection: 'column',
+    padding: RFValue(12),
+    borderTopWidth: RFValue(1),
+    borderTopColor: '#E0E0E0',
+    backgroundColor: '#F8F9FA',
+    gap: RFValue(8),
+  },
+
+  sidePanelNavigationRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: RFValue(8),
+  },
+
+  sidePanelPreviousButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#F0F0F0',
+    borderRadius: RFValue(10),
+    paddingVertical: RFValue(12),
+    gap: RFValue(6),
+  },
+
+  sidePanelButtonFull: {
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#F0F0F0',
+    borderRadius: RFValue(10),
+    paddingVertical: RFValue(12),
+    gap: RFValue(6),
+  },
+
+  sidePanelPreviousButtonFull: {
+    width: '100%',
+  },
+
+  sidePanelNextButton: {
+    flex: 1,
+    borderRadius: RFValue(10),
+    overflow: 'hidden',
+  },
+
+  sidePanelNextButtonFull: {
+    width: '100%',
+    borderRadius: RFValue(10),
+    overflow: 'hidden',
+  },
+
+  sidePanelNextButtonGradient: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: RFValue(12),
+    gap: RFValue(6),
+  },
+
+  sidePanelNextButtonText: {
+    color: '#fff',
+    fontSize: RFValue(13),
+    ...FONTS.body4,
+  },
+
+  sidePanelFinishButton: {
+    flex: 1,
+    borderRadius: RFValue(10),
+    overflow: 'hidden',
+  },
+
+  sidePanelFinishButtonFull: {
+    width: '100%',
+    borderRadius: RFValue(10),
+    overflow: 'hidden',
+  },
+
+  sidePanelFinishButtonGradient: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: RFValue(12),
+    gap: RFValue(6),
+  },
+
+  sidePanelFinishButtonText: {
+    color: '#fff',
+    fontSize: RFValue(13),
+    ...FONTS.body4,
+    fontWeight: 'bold',
+  },
+
+  sidePanelButtonText: {
+    color: '#333',
+    fontSize: RFValue(13),
+    ...FONTS.body4,
+  },
+
+  sidePanelButtonTextDisabled: {
+    color: '#ccc',
+  },
+
+  sidePanelButtonDisabled: {
+    opacity: 0.5,
   },
 
   overlay: {
