@@ -19,7 +19,8 @@ const {width} = Dimensions.get('window');
 const sampleQuestions = [
   {
     id: 1,
-    question: 'The Nile .......................... is a very long river in Egypt. 🤔',
+    question:
+      'The Nile .......................... is a very long river in Egypt. 🤔',
     options: [
       {id: 'A', text: 'River'},
       {id: 'B', text: 'Lake'},
@@ -129,7 +130,6 @@ const sampleQuestions = [
   },
 ];
 
-
 export default function ExamQuestion({route, navigation}) {
   const {examTitle} = route.params || {};
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -143,8 +143,7 @@ export default function ExamQuestion({route, navigation}) {
   // Get questions from route params or use sample questions
   const questions = route.params?.questions || sampleQuestions;
   const totalQuestions = questions.length;
-  const currentQuestion =
-    questions[currentQuestionIndex] || questions[0];
+  const currentQuestion = questions[currentQuestionIndex] || questions[0];
 
   // Timer
   useEffect(() => {
@@ -217,10 +216,7 @@ export default function ExamQuestion({route, navigation}) {
   };
 
   const handleFinishExam = () => {
-    // Handle exam finish logic here
-    // You can navigate to results screen or show a confirmation dialog
     console.log('Exam finished!', selectedAnswers);
-    // Example: navigation.navigate('ExamResults', { answers: selectedAnswers });
     alert('تم إنهاء الامتحان بنجاح!');
   };
 
@@ -301,9 +297,7 @@ export default function ExamQuestion({route, navigation}) {
             end={{x: 1, y: 1}}
             style={styles.titleCard}>
             <Ionicons name="book-outline" size={RFValue(20)} color="#fff" />
-            <Text style={styles.titleText}>
-              {examTitle || 'اختبار الدرس الاول الصف الرابع يونت 4'}
-            </Text>
+            <Text style={styles.titleText}>{examTitle || 'اختبار4'}</Text>
           </LinearGradient>
 
           {/* Question Card */}
@@ -417,20 +411,14 @@ export default function ExamQuestion({route, navigation}) {
               </TouchableOpacity>
             ) : (
               // Next Button
-              <TouchableOpacity
-                style={styles.nextButton}
-                onPress={handleNext}>
+              <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
                 <LinearGradient
                   colors={['#667EEA', '#764BA2']}
                   start={{x: 0, y: 0}}
                   end={{x: 1, y: 1}}
                   style={styles.nextButtonGradient}>
                   <Text style={styles.nextButtonText}>التالي</Text>
-                  <Ionicons
-                    name="arrow-back"
-                    size={RFValue(20)}
-                    color="#fff"
-                  />
+                  <Ionicons name="arrow-back" size={RFValue(20)} color="#fff" />
                 </LinearGradient>
               </TouchableOpacity>
             )}
@@ -502,7 +490,8 @@ export default function ExamQuestion({route, navigation}) {
               <Text
                 style={[
                   styles.sidePanelButtonText,
-                  currentQuestionIndex === 0 && styles.sidePanelButtonTextDisabled,
+                  currentQuestionIndex === 0 &&
+                    styles.sidePanelButtonTextDisabled,
                 ]}>
                 السابق
               </Text>
@@ -543,11 +532,7 @@ export default function ExamQuestion({route, navigation}) {
                   end={{x: 1, y: 1}}
                   style={styles.sidePanelNextButtonGradient}>
                   <Text style={styles.sidePanelNextButtonText}>التالي</Text>
-                  <Ionicons
-                    name="arrow-back"
-                    size={RFValue(18)}
-                    color="#fff"
-                  />
+                  <Ionicons name="arrow-back" size={RFValue(18)} color="#fff" />
                 </LinearGradient>
               </TouchableOpacity>
             )}
