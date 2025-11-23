@@ -391,8 +391,8 @@ const ArrangePuzzleGame = ({question, onAnswerChange, selectedAnswer}) => {
           style={styles.resetButton}
           onPress={handleReset}
           activeOpacity={0.7}>
-          <Ionicons name="refresh" size={RFValue(18)} color="#fff" />
           <Text style={styles.resetButtonText}>إعادة تعيين</Text>
+          <Ionicons name="refresh" size={RFValue(18)} color="#fff" />
         </TouchableOpacity>
       </View>
 
@@ -1548,6 +1548,7 @@ const styles = StyleSheet.create({
   sortedWordsContainer: {
     minHeight: RFValue(80),
     justifyContent: 'center',
+    direction: 'ltr',
   },
 
   placeholderText: {
