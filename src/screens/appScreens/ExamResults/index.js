@@ -13,9 +13,7 @@ import {RFValue} from 'react-native-responsive-fontsize';
 import Svg, {Circle} from 'react-native-svg';
 import {FONTS} from '../../../constants';
 import {AppHeader} from '../../../components';
-
 const {width} = Dimensions.get('window');
-
 export default function ExamResults({route, navigation}) {
   const {questions, selectedAnswers, timeTaken, examTitle} = route.params || {};
 

@@ -20,7 +20,7 @@ const sampleQuestions = [
   {
     id: 1,
     question:
-      'The Nile .......................... is a very long river in Egypt. 🤔',
+      'The Nile .......................... is a very long river in Egypt. ',
     options: [
       {id: 'A', text: 'River'},
       {id: 'B', text: 'Lake'},
@@ -303,7 +303,7 @@ export default function ExamQuestion({route, navigation}) {
             end={{x: 1, y: 1}}
             style={styles.titleCard}>
             <Ionicons name="book-outline" size={RFValue(20)} color="#fff" />
-            <Text style={styles.titleText}>{examTitle || 'اختبار4'}</Text>
+            <Text style={styles.titleText}>{examTitle || 'اختبار'}</Text>
           </LinearGradient>
 
           {/* Question Card */}
@@ -316,7 +316,9 @@ export default function ExamQuestion({route, navigation}) {
               </View>
               <Text style={styles.questionType}>Multiple Choice</Text>
             </View>
-            <Text style={styles.questionText}>{currentQuestion.question}</Text>
+            <Text style={styles.questionText}>
+              {currentQuestion.question} 🤔
+            </Text>
           </View>
 
           {/* Options */}
@@ -746,6 +748,7 @@ const styles = StyleSheet.create({
     marginBottom: RFValue(12),
     borderWidth: RFValue(2),
     borderColor: '#E8E8E8',
+    direction: 'ltr',
   },
 
   optionCardSelected: {
@@ -858,13 +861,13 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
 
-  /* ===== SIDE PANEL (Your Requested Version) ===== */
+  /* ===== SIDE PANEL  ===== */
   sidePanel: {
     position: 'absolute',
     left: 0,
     top: 0,
     bottom: 0,
-    width: width * 0.5,
+    width: width * 0.7,
     backgroundColor: '#fff',
     elevation: RFValue(10),
     shadowColor: '#000',
@@ -873,6 +876,7 @@ const styles = StyleSheet.create({
     shadowRadius: RFValue(8),
     zIndex: 100,
     flexDirection: 'column',
+    paddingTop: RFValue(18),
   },
 
   sidePanelHeader: {
@@ -915,7 +919,7 @@ const styles = StyleSheet.create({
   },
 
   questionNumberButtonAnswered: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#37daffff',
   },
 
   questionNumberText: {
