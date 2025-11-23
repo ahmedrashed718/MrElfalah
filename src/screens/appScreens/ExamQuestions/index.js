@@ -136,6 +136,7 @@ export default function ExamQuestion({route, navigation}) {
   const [selectedAnswers, setSelectedAnswers] = useState({});
   const [timeRemaining, setTimeRemaining] = useState(60 * 60);
   const [showSidePanel, setShowSidePanel] = useState(false);
+  const [startTime] = useState(Date.now());
 
   const progressAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(1)).current;
@@ -216,8 +217,13 @@ export default function ExamQuestion({route, navigation}) {
   };
 
   const handleFinishExam = () => {
-    console.log('Exam finished!', selectedAnswers);
-    alert('تم إنهاء الامتحان بنجاح!');
+    const timeTaken = Math.floor((Date.now() - startTime) / 1000);
+    navigation.navigate('ExamResults', {
+      questions,
+      selectedAnswers,
+      timeTaken,
+      examTitle: examTitle || 'اختبار4',
+    });
   };
 
   const progressWidth = progressAnim.interpolate({
@@ -723,6 +729,7 @@ const styles = StyleSheet.create({
     color: '#222',
     lineHeight: RFValue(26),
     ...FONTS.body3,
+    direction: 'ltr',
   },
 
   /* ====== Options ====== */

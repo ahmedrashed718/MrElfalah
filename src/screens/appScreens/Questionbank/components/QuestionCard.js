@@ -70,7 +70,7 @@ export default function QuestionCard({item, index, gradient, number, onPress}) {
                   color="#fff"
                   style={styles.buttonIcon}
                 />
-                <Text style={styles.buttonText}>Let's Start..!</Text>
+                <Text style={styles.buttonText}>هيا بنا نبدأ ..!</Text>
                 <Ionicons
                   name="game-controller-outline"
                   size={RFValue(18)}
@@ -187,8 +187,8 @@ const styles = StyleSheet.create({
   buttonText: {
     color: COLORS.white,
     // fontWeight: 'bold',
-    ...FONTS.body2,
-    fontSize: RFValue(12),
+    ...FONTS.body1,
+    fontSize: RFValue(14),
   },
 
   buttonIcon: {

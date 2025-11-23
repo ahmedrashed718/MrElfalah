@@ -176,7 +176,7 @@ export default function ExamsScreen({navigation}) {
             />
             <Text style={styles.startText}>ابدأ الامتحان</Text>
             <Ionicons
-              name="arrow-forward"
+              name="arrow-back"
               size={RFValue(14)}
               color="#fff"
               style={styles.startIcon}

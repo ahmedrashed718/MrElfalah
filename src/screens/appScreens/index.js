@@ -5,5 +5,6 @@ import QuestionBank from './Questionbank';
 import Profile from './Profile';
 import CoursePlayer from './CoursePlayer';
 import ExamQuestion from './ExamQuestions';
+import ExamResults from './ExamResults';
 import QuestionStages from './QuestionStages';
-export {Home, Courses, Exams, QuestionBank, Profile, CoursePlayer, QuestionStages};
+export {Home, Courses, Exams, QuestionBank, Profile, CoursePlayer, ExamResults, QuestionStages};

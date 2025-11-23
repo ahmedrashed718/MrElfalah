@@ -2,7 +2,13 @@ import React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import BottomTabs from './BottomTabs';
 import AuthStack from './AuthStack';
-import {CoursePlayer, Home, QuestionBank, QuestionStages} from '../screens/appScreens';
+import {
+  CoursePlayer,
+  Home,
+  QuestionBank,
+  QuestionStages,
+  ExamResults,
+} from '../screens/appScreens';
 import ExamQuestion from '../screens/appScreens/ExamQuestions';
 
 const Stack = createNativeStackNavigator();
@@ -20,6 +26,7 @@ const AppStack = () => {
       <Stack.Screen name="Home" component={Home} />
       <Stack.Screen name="CoursePlayer" component={CoursePlayer} />
       <Stack.Screen name="ExamQuestion" component={ExamQuestion} />
+      <Stack.Screen name="ExamResults" component={ExamResults} />
       <Stack.Screen name="QuestionBank" component={QuestionBank} />
       <Stack.Screen name="QuestionStages" component={QuestionStages} />
     </Stack.Navigator>
