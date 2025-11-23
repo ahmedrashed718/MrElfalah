@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useState, useEffect, useRef, useCallback} from 'react';
 import {View, StyleSheet, ScrollView} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {RFValue} from 'react-native-responsive-fontsize';
@@ -17,17 +17,39 @@ export default function ExamQuestion({route, navigation}) {
   const {examTitle} = route.params || {};
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState({});
-  const [timeRemaining, setTimeRemaining] = useState(60 * 60);
+  const [timeRemaining, setTimeRemaining] = useState(60 * 1);
   const [showSidePanel, setShowSidePanel] = useState(false);
   const [startTime] = useState(Date.now());
 
   const progressAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(1)).current;
+  const examFinishedRef = useRef(false);
+  const selectedAnswersRef = useRef({});
+  const questionsRef = useRef([]);
+  const examTitleRef = useRef('');
+  const navigationRef = useRef(null);
 
   // Get questions from route params or use sample questions
   const questions = route.params?.questions || sampleQuestions;
   const totalQuestions = questions.length;
   const currentQuestion = questions[currentQuestionIndex] || questions[0];
+
+  // Keep refs updated
+  useEffect(() => {
+    selectedAnswersRef.current = selectedAnswers;
+  }, [selectedAnswers]);
+
+  useEffect(() => {
+    questionsRef.current = questions;
+  }, [questions]);
+
+  useEffect(() => {
+    examTitleRef.current = examTitle;
+  }, [examTitle]);
+
+  useEffect(() => {
+    navigationRef.current = navigation;
+  }, [navigation]);
 
   // Timer
   useEffect(() => {
@@ -42,6 +64,23 @@ export default function ExamQuestion({route, navigation}) {
     }, 1000);
     return () => clearInterval(timer);
   }, []);
+
+  // Auto-finish exam when timer reaches 0
+  useEffect(() => {
+    if (timeRemaining <= 0 && !examFinishedRef.current && navigationRef.current) {
+      examFinishedRef.current = true;
+      // Use setTimeout to defer navigation outside of render cycle
+      setTimeout(() => {
+        const timeTaken = Math.floor((Date.now() - startTime) / 1000);
+        navigationRef.current?.navigate('ExamResults', {
+          questions: questionsRef.current,
+          selectedAnswers: selectedAnswersRef.current,
+          timeTaken,
+          examTitle: examTitleRef.current || 'اختبار4',
+        });
+      }, 0);
+    }
+  }, [timeRemaining, startTime]);
 
   // Progress bar
   useEffect(() => {
@@ -100,7 +139,11 @@ export default function ExamQuestion({route, navigation}) {
     }
   };
 
-  const handleFinishExam = () => {
+  const handleFinishExam = useCallback(() => {
+    if (examFinishedRef.current) {
+      return; // Prevent multiple submissions
+    }
+    examFinishedRef.current = true;
     const timeTaken = Math.floor((Date.now() - startTime) / 1000);
     navigation.navigate('ExamResults', {
       questions,
@@ -108,7 +151,7 @@ export default function ExamQuestion({route, navigation}) {
       timeTaken,
       examTitle: examTitle || 'اختبار4',
     });
-  };
+  }, [startTime, navigation, questions, selectedAnswers, examTitle]);
 
   const progressWidth = progressAnim.interpolate({
     inputRange: [0, 1],

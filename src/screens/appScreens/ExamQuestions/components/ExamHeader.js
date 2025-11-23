@@ -6,14 +6,19 @@ import {RFValue} from 'react-native-responsive-fontsize';
 import {FONTS} from '../../../../constants';
 import {Animated} from 'react-native';
 
-const ExamHeader = ({timeRemaining, currentQuestionIndex, totalQuestions, progressWidth}) => {
+const ExamHeader = ({
+  timeRemaining,
+  currentQuestionIndex,
+  totalQuestions,
+  progressWidth,
+}) => {
   const formatTime = seconds => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const isTimeWarning = timeRemaining < 300;
+  const isTimeWarning = timeRemaining < 30;
 
   return (
     <LinearGradient
@@ -28,11 +33,7 @@ const ExamHeader = ({timeRemaining, currentQuestionIndex, totalQuestions, progre
               styles.timerContainer,
               isTimeWarning && styles.timerWarning,
             ]}>
-            <Ionicons
-              name="time-outline"
-              size={RFValue(18)}
-              color="#fff"
-            />
+            <Ionicons name="time-outline" size={RFValue(18)} color="#fff" />
             <Text
               style={[
                 styles.timerText,
@@ -142,4 +143,3 @@ const styles = StyleSheet.create({
 });
 
 export default ExamHeader;
-
