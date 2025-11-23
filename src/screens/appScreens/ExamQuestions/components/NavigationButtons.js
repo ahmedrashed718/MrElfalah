@@ -43,12 +43,8 @@ const NavigationButtons = ({
             start={{x: 0, y: 0}}
             end={{x: 1, y: 1}}
             style={styles.finishButtonGradient}>
-            <Ionicons
-              name="checkmark-circle"
-              size={RFValue(20)}
-              color="#fff"
-            />
-            <Text style={styles.finishButtonText}>إنهاء الامتحان</Text>
+            <Text style={styles.finishButtonText}>إنهاء الامتحان </Text>
+            <Ionicons name="checkmark-circle" size={RFValue(20)} color="#fff" />
           </LinearGradient>
         </TouchableOpacity>
       ) : (
@@ -134,4 +130,3 @@ const styles = StyleSheet.create({
 });
 
 export default NavigationButtons;
-
