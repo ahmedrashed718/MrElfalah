@@ -9,6 +9,8 @@ const exam = require('../assets/icons/exam.png');
 const exam2 = require('../assets/icons/exam2.png');
 const bank = require('../assets/icons/bank.png');
 const bank2 = require('../assets/icons/bank2.png');
+const learning = require('../assets/icons/learning.png');
+const learning2 = require('../assets/icons/learning2.png');
 
 export default {
   book1,
@@ -22,4 +24,6 @@ export default {
   exam2,
   bank,
   bank2,
+  learning,
+  learning2,
 };

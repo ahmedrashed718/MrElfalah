@@ -86,9 +86,10 @@ const TabIcon = ({focused, icon, icon2, label}) => {
     return (
       <View style={styles.subscribeContainer}>
         <Image
-          source={icons.home2}
+          source={icons.learning2}
           style={{width: RFValue(30), height: RFValue(30)}}
           resizeMode="contain"
+          tintColor={'white'}
         />
       </View>
     );

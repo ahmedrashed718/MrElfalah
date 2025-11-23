@@ -24,8 +24,33 @@ export default function ExamResults({route, navigation}) {
 
   const results =
     questions?.map(question => {
-      const userAnswer = selectedAnswers[question.id];
-      const isCorrect = userAnswer === question.correctAnswer;
+      const userAnswer = selectedAnswers[question.question_id];
+      let isCorrect = false;
+
+      // Check answer based on question type
+      if (question.type === 'arrangePuzzle') {
+        const correctSentence =
+          question.correctSentence || question.question_valid_answer || '';
+        const userSentence = userAnswer || '';
+        isCorrect =
+          userSentence.trim().toLowerCase() ===
+          correctSentence.trim().toLowerCase();
+      } else {
+        // For MCQ, find the correct answer from real_answers
+        const correctAnswerObj = question.real_answers?.find(
+          ans => ans.answer_check === true,
+        );
+        if (correctAnswerObj) {
+          const correctIndex = question.real_answers.findIndex(
+            ans => ans.answer_check === true,
+          );
+          const correctOptionId = String.fromCharCode(65 + correctIndex); // A, B, C, D
+          isCorrect = userAnswer === correctOptionId;
+        } else {
+          isCorrect = userAnswer === question.question_valid_answer;
+        }
+      }
+
       if (isCorrect) {
         correctCount++;
       } else {
@@ -120,15 +145,54 @@ export default function ExamResults({route, navigation}) {
 
             <View style={styles.questionsList}>
               {results.map((result, index) => {
-                const correctOption = result.options.find(
-                  opt => opt.id === result.correctAnswer,
-                );
-                const userOption = result.options.find(
-                  opt => opt.id === result.userAnswer,
-                );
+                // Get correct answer based on question type
+                let correctAnswerText = '';
+                let userAnswerText = '';
+
+                if (result.type === 'arrangePuzzle') {
+                  // For arrange puzzle
+                  correctAnswerText =
+                    result.correctSentence ||
+                    result.question_valid_answer ||
+                    '';
+                  userAnswerText = result.userAnswer || '';
+                } else {
+                  // For MCQ
+                  const correctAnswerObj = result.real_answers?.find(
+                    ans => ans.answer_check === true,
+                  );
+                  const correctIndex = result.real_answers?.findIndex(
+                    ans => ans.answer_check === true,
+                  );
+                  const correctOptionId =
+                    correctIndex !== -1
+                      ? String.fromCharCode(65 + correctIndex)
+                      : null;
+
+                  correctAnswerText =
+                    correctAnswerObj?.answer_text ||
+                    result.question_valid_answer ||
+                    '';
+
+                  // Get user's answer text
+                  if (result.userAnswer) {
+                    const userAnswerIndex = result.real_answers?.findIndex(
+                      (_, idx) =>
+                        String.fromCharCode(65 + idx) === result.userAnswer,
+                    );
+                    if (userAnswerIndex !== -1 && result.real_answers) {
+                      userAnswerText =
+                        result.real_answers[userAnswerIndex]?.answer_text || '';
+                    } else {
+                      userAnswerText = result.userAnswer;
+                    }
+                  }
+                }
 
                 return (
-                  <View key={result.id} style={styles.questionReviewCard}>
+                  <View
+                    key={result.question_id || index}
+                    style={styles.questionReviewCard}>
                     {/* Question header */}
                     <View style={styles.questionReviewHeader}>
                       <View
@@ -144,7 +208,13 @@ export default function ExamResults({route, navigation}) {
                       </View>
 
                       <Text style={styles.questionReviewText}>
-                        {result.question}
+                        {result.question_text || result.question}
+                        {result.type === 'arrangePuzzle' && (
+                          <Text style={styles.questionTypeLabel}>
+                            {' '}
+                            (ترتيب الكلمات)
+                          </Text>
+                        )}
                       </Text>
                     </View>
 
@@ -163,7 +233,7 @@ export default function ExamResults({route, navigation}) {
 
                       <View style={[styles.answerOption, styles.correctAnswer]}>
                         <Text style={styles.answerOptionText}>
-                          {correctOption?.text}
+                          {correctAnswerText}
                         </Text>
                         <Ionicons
                           name="checkmark"
@@ -197,7 +267,7 @@ export default function ExamResults({route, navigation}) {
                               : styles.incorrectAnswer,
                           ]}>
                           <Text style={styles.answerOptionText}>
-                            {userOption?.text}
+                            {userAnswerText}
                           </Text>
 
                           <Ionicons
@@ -439,7 +509,7 @@ const styles = StyleSheet.create({
   },
   progressBarBackground: {
     flex: 1,
-    height: RFValue(10),
+    height: RFValue(12),
     backgroundColor: 'rgba(255,255,255,0.25)',
     borderRadius: RFValue(5),
     overflow: 'hidden',
@@ -454,8 +524,8 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: RFValue(15),
     ...FONTS.body4,
-    minWidth: RFValue(55),
-    fontWeight: '600',
+    // minWidth: RFValue(55),
+    // fontWeight: '600',
   },
   contentWrapper: {
     flexDirection: width > 600 ? 'row' : 'column',
@@ -545,6 +615,12 @@ const styles = StyleSheet.create({
     ...FONTS.body3,
     paddingTop: RFValue(2),
     direction: 'ltr',
+  },
+  questionTypeLabel: {
+    fontSize: RFValue(14),
+    color: '#667EEA',
+    fontStyle: 'italic',
+    ...FONTS.body4,
   },
   answerContainer: {
     marginTop: RFValue(16),
