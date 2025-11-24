@@ -1,5 +1,27 @@
 export const sampleQuestions = [
   {
+    question_id: "347",
+    question_text: "south",
+    question_image: "",
+    question_answers: "",
+    question_valid_answer: "south",
+    course_id: "9",
+    unit_id: "22",
+    video_id: null,
+    type: "arrangePuzzle",
+    gameType: "character",
+    hint: "جنوب",
+    correctSentence: "south",
+    str_shuffle: [
+      "o",
+      "t",
+      "u",
+      "s",
+      "h"
+    ],
+    real_answers: []
+  },
+  {
     question_id: '3184',
     question_text: 'He was _________ when his team won. ',
     question_image: '',

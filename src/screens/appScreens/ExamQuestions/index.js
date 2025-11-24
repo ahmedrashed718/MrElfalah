@@ -65,7 +65,7 @@ export default function ExamQuestion({route, navigation}) {
     return () => clearInterval(timer);
   }, []);
 
-  // Auto-finish exam when timer reaches 0
+  // Auto-finish exam when timer reaches 
   useEffect(() => {
     if (timeRemaining <= 0 && !examFinishedRef.current && navigationRef.current) {
       examFinishedRef.current = true;
