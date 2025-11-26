@@ -86,7 +86,7 @@ export default function QuestionStages({route, navigation}) {
   };
 
   return (
-    <ScreensContainer>
+    <>
       <AppHeader
         title={'مراحل الأسئلة'}
         showBack={true}
@@ -140,7 +140,7 @@ export default function QuestionStages({route, navigation}) {
         }
         ListFooterComponent={<View style={styles.footer} />}
       />
-    </ScreensContainer>
+    </>
   );
 }
 

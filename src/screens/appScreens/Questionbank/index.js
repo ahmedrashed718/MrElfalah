@@ -95,7 +95,8 @@ export default function QuestionBank({navigation}) {
   };
 
   return (
-    <ScreensContainer>
+    // <ScreensContainer>
+    <>
       <AppHeader title={'بنك الاسئلة'} showBack={false} />
 
       <FlatList
@@ -106,7 +107,8 @@ export default function QuestionBank({navigation}) {
         contentContainerStyle={styles.listContent}
         ListFooterComponent={<View style={styles.footer} />}
       />
-    </ScreensContainer>
+      </>
+    // </ScreensContainer>
   );
 }
 
