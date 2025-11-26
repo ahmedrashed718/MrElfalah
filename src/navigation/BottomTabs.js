@@ -19,7 +19,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: RFValue(5),
-    maxHeight: RFValue(15),
   },
   subscribeContainer: {
     position: 'absolute',
@@ -41,11 +40,13 @@ const styles = StyleSheet.create({
   labelStyle: {
     ...FONTS.body5,
     fontFamily: FONTS.fontFamilyMedium,
+    fontSize: RFValue(10),
     color: COLORS.white,
     textAlign: 'center',
+    marginTop: RFValue(2),
   },
   tabBarStyle: {
-    height: RFValue(65),
+    height: RFValue(75),
     backgroundColor: 'transparent',
     borderTopWidth: 0,
     elevation: 5,
@@ -86,7 +87,7 @@ const TabIcon = ({focused, icon, icon2, label}) => {
     return (
       <View style={styles.subscribeContainer}>
         <Image
-          source={icons.learning2}
+          source={icons.home2}
           style={{width: RFValue(30), height: RFValue(30)}}
           resizeMode="contain"
           tintColor={'white'}
@@ -117,18 +118,19 @@ export default function BottomTabs() {
         tabBarInactiveTintColor: COLORS.white,
         tabBarStyle: styles.tabBarStyle,
         tabBarBackground: () => <TabBarBackground />,
+        tabBarLabelStyle: styles.labelStyle,
       }}>
       {/* Home Tab 1 */}
       <BottomTab.Screen
         name={'QuestionBank'}
         component={QuestionBank}
         options={{
-          tabBarLabel: () => null,
+          tabBarLabel: 'بنك الأسئلة',
           tabBarIcon: ({focused}) => (
             <TabIcon
               focused={focused}
-              icon={icons.bank}
-              icon2={icons.bank2}
+              icon={icons.learning2}
+              icon2={icons.learning}
               label=""
             />
           ),
@@ -140,7 +142,7 @@ export default function BottomTabs() {
         name={'المناهج'}
         component={Courses}
         options={{
-          tabBarLabel: () => null,
+          tabBarLabel: 'المناهج',
           tabBarIcon: ({focused}) => (
             <TabIcon
               focused={focused}
@@ -157,7 +159,7 @@ export default function BottomTabs() {
         name={'Home'}
         component={Home}
         options={{
-          tabBarLabel: () => null,
+          tabBarLabel: 'الرئيسية',
           tabBarIcon: () => <TabIcon label="tab_subscribe" />,
         }}
       />
@@ -167,7 +169,7 @@ export default function BottomTabs() {
         name={'بنك الاسئله'}
         component={Exams}
         options={{
-          tabBarLabel: () => null,
+          tabBarLabel: 'الامتحانات',
           tabBarIcon: ({focused}) => (
             <TabIcon
               focused={focused}
@@ -184,7 +186,7 @@ export default function BottomTabs() {
         name={'الملف الشخصي'}
         component={Profile}
         options={{
-          tabBarLabel: () => null,
+          tabBarLabel: 'الملف الشخصي',
           tabBarIcon: ({focused}) => (
             <TabIcon
               focused={focused}
