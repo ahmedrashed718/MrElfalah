@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
   labelStyle: {
     ...FONTS.body5,
     fontFamily: FONTS.fontFamilyMedium,
-    fontSize: RFValue(10),
+    fontSize: RFValue(9),
     color: COLORS.white,
     textAlign: 'center',
     marginTop: RFValue(2),
