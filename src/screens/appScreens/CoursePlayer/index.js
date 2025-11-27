@@ -1,15 +1,11 @@
 import React, {useState, useRef, useEffect} from 'react';
-import {
-  View,
-  StyleSheet,
-  SectionList,
-  Dimensions,
-} from 'react-native';
+import {View, StyleSheet, SectionList, Dimensions} from 'react-native';
 import {RFValue} from 'react-native-responsive-fontsize';
 import {COLORS} from '../../../constants';
 import {AppHeader} from '../../../components';
 import PointsCard from './components/PointsCard';
 import PDFButtons from './components/PDFButtons';
+import PDFModal from './components/PDFModal';
 import VideoPlayer from './components/VideoPlayer';
 import VideoControls from './components/VideoControls';
 import QualityModal from './components/QualityModal';
@@ -38,6 +34,11 @@ export default function CoursePlayer({navigation}) {
     'Auto (360p • 1.4 Mbps)',
   );
   const [fullscreen, setFullscreen] = useState(false);
+
+  // PDF Modal states
+  const [showPDFModal, setShowPDFModal] = useState(false);
+  const [pdfUrl, setPdfUrl] = useState('');
+  const [pdfTitle, setPdfTitle] = useState('');
 
   const qualityOptions = [
     'Auto (360p • 1.4 Mbps)',
@@ -243,6 +244,27 @@ export default function CoursePlayer({navigation}) {
     }
   }, [paused, showControls]);
 
+  // PDF Modal handlers
+  const handleOpenMemo = () => {
+    setPdfUrl(
+      'https://camp-coding.tech/teachersApp2023/test_camp/admin/uploads/1173748371_1664476196%20_064207.pdf',
+    );
+    setPdfTitle('عرض المذكرة');
+    setShowPDFModal(true);
+  };
+
+  const handleOpenCourseFile = () => {
+    setPdfUrl('https://pdfobject.com/pdf/sample.pdf');
+    setPdfTitle('ملف الدورة التدريبية');
+    setShowPDFModal(true);
+  };
+
+  const handleClosePDFModal = () => {
+    setShowPDFModal(false);
+    setPdfUrl('');
+    setPdfTitle('');
+  };
+
   return (
     <View style={styles.container}>
       <AppHeader title={'دروس الدورة'} />
@@ -265,21 +287,32 @@ export default function CoursePlayer({navigation}) {
         onSelectSpeed={changeSpeed}
       />
 
+      {/* PDF Modal */}
+      <PDFModal
+        visible={showPDFModal}
+        pdfUrl={pdfUrl}
+        title={pdfTitle}
+        onClose={handleClosePDFModal}
+      />
+
       <SectionList
         ListHeaderComponent={
           <>
             <PointsCard points={points} />
-            <PDFButtons />
+            <PDFButtons
+              onOpenMemo={handleOpenMemo}
+              onOpenCourseFile={handleOpenCourseFile}
+            />
             <VideoPlayer
               videoRef={videoRef}
               videoUrl={videoUrl}
-                      paused={paused}
-                      volume={volume}
-                      muted={muted}
+              paused={paused}
+              volume={volume}
+              muted={muted}
               playbackRate={playbackRate}
-                      onLoad={onLoad}
-                      onProgress={onProgress}
-                      onEnd={onEnd}
+              onLoad={onLoad}
+              onProgress={onProgress}
+              onEnd={onEnd}
               onTogglePlayPause={togglePlayPause}
             />
             <VideoControls
@@ -305,13 +338,13 @@ export default function CoursePlayer({navigation}) {
               visible={fullscreen}
               videoRef={videoRef}
               videoUrl={videoUrl}
-                    paused={paused}
-                    volume={volume}
-                    muted={muted}
+              paused={paused}
+              volume={volume}
+              muted={muted}
               playbackRate={playbackRate}
-                    onLoad={onLoad}
-                    onProgress={onProgress}
-                    onEnd={onEnd}
+              onLoad={onLoad}
+              onProgress={onProgress}
+              onEnd={onEnd}
               onClose={() => setFullscreen(false)}
               onTogglePlayPause={togglePlayPause}
             />

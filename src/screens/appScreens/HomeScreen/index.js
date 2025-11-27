@@ -254,6 +254,7 @@ export default function HomeScreen() {
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
+            // pagingEnabled={true}
             contentContainerStyle={styles.phoneCardsScrollContainer}>
             {contactNumbers.map((item, index) => (
               <PhoneNumberCard
@@ -466,7 +467,7 @@ const styles = StyleSheet.create({
     gap: RFValue(10),
   },
   phoneCardsScrollContainer: {
-    paddingHorizontal: RFValue(2),
+    padding: RFValue(4),
     gap: RFValue(10),
   },
 });

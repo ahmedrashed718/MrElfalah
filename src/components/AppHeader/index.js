@@ -87,6 +87,9 @@ export default function AppHeader({
 
 const styles = StyleSheet.create({
   container: {
+    borderBottomLeftRadius: RFValue(30),
+    borderBottomRightRadius: RFValue(30),
+    // backgroundColor: 'red',
     ...Platform.select({
       ios: {
         shadowColor: COLORS.black,

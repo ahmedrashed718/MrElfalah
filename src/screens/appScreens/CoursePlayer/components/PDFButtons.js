@@ -4,17 +4,14 @@ import LinearGradient from 'react-native-linear-gradient';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {RFValue} from 'react-native-responsive-fontsize';
 import {COLORS, FONTS} from '../../../../constants';
-import {Colors} from 'react-native/Libraries/NewAppScreen';
 
-const PDFButtons = () => {
+const PDFButtons = ({onOpenMemo, onOpenCourseFile}) => {
   return (
     <View style={styles.pdfButtonsSection}>
       <TouchableOpacity
         style={styles.pdfButton}
         activeOpacity={0.8}
-        onPress={() => {
-          // TODO: Add PDF functionality later
-        }}>
+        onPress={onOpenMemo}>
         <LinearGradient
           colors={['#FF6B35', '#FF8C42']}
           start={{x: 0, y: 0}}
@@ -28,15 +25,17 @@ const PDFButtons = () => {
       <TouchableOpacity
         style={styles.pdfButton}
         activeOpacity={0.8}
-        onPress={() => {
-          // TODO: Add PDF functionality later
-        }}>
+        onPress={onOpenCourseFile}>
         <LinearGradient
           colors={['#6C5CE7', '#A29BFE']}
           start={{x: 0, y: 0}}
           end={{x: 1, y: 0}}
           style={styles.pdfButtonGradient}>
-          <Ionicons name="document-text" size={RFValue(14)} color="#FFFFFF" />
+          <Ionicons
+            name="document-text"
+            size={RFValue(14)}
+            color={COLORS.white}
+          />
           <Text style={styles.pdfButtonText}>عرض ملف الدورة</Text>
         </LinearGradient>
       </TouchableOpacity>
@@ -58,7 +57,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     ...Platform.select({
       ios: {
-        shadowColor: '#000',
+        shadowColor: COLORS.black,
         shadowOffset: {width: 0, height: 2},
         shadowOpacity: 0.15,
         shadowRadius: 4,

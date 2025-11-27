@@ -12,6 +12,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import {RFValue} from 'react-native-responsive-fontsize';
 import * as Animatable from 'react-native-animatable';
 import {FONTS, COLORS} from '../../../../constants';
+import {useNavigation} from '@react-navigation/native';
 
 const {width} = Dimensions.get('window');
 const SECTION_MARGIN = RFValue(15);
@@ -21,6 +22,8 @@ const CARD_WIDTH =
   (width - SECTION_MARGIN * 2 - SECTION_PADDING * 2 - CARD_SPACING) / 2;
 
 const ActivitiesCard = () => {
+  const navigation = useNavigation();
+
   const activities = [
     {
       id: 1,
@@ -55,7 +58,7 @@ const ActivitiesCard = () => {
       icon: 'star',
       gradient: ['#4ECDC4', '#44A08D'],
       onPress: () => {
-        // Navigate to solve with farmer
+        navigation.navigate('ExamQuestion');
       },
     },
     {
@@ -65,7 +68,7 @@ const ActivitiesCard = () => {
       gradient: ['#A855F7', '#EC4899'],
       fullWidth: true,
       onPress: () => {
-        // Navigate to lesson test
+        navigation.navigate('ExamQuestion');
       },
     },
   ];
