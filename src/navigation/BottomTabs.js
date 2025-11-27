@@ -87,7 +87,7 @@ const TabIcon = ({focused, icon, icon2, label}) => {
     return (
       <View style={styles.subscribeContainer}>
         <Image
-          source={icons.home2}
+          source={icons.book2}
           style={{width: RFValue(30), height: RFValue(30)}}
           resizeMode="contain"
           tintColor={'white'}
@@ -122,6 +122,22 @@ export default function BottomTabs() {
       }}>
       {/* Home Tab 1 */}
       <BottomTab.Screen
+        name={'Home'}
+        component={Home}
+        options={{
+          tabBarLabel: 'الرئيسية',
+          tabBarIcon: ({focused}) => (
+            <TabIcon
+              focused={focused}
+              icon={icons.home2}
+              icon2={icons.home}
+              label="المناهج"
+            />
+          ),
+        }}
+      />
+      {/* Home Tab 2 */}
+      <BottomTab.Screen
         name={'QuestionBank'}
         component={QuestionBank}
         options={{
@@ -137,29 +153,12 @@ export default function BottomTabs() {
         }}
       />
 
-      {/* Home Tab 2 */}
+      {/* Middle Subscribe Button */}
       <BottomTab.Screen
         name={'المناهج'}
         component={Courses}
         options={{
           tabBarLabel: 'المناهج',
-          tabBarIcon: ({focused}) => (
-            <TabIcon
-              focused={focused}
-              icon={icons.book2}
-              icon2={icons.book1}
-              label="المناهج"
-            />
-          ),
-        }}
-      />
-
-      {/* Middle Subscribe Button */}
-      <BottomTab.Screen
-        name={'Home'}
-        component={Home}
-        options={{
-          tabBarLabel: 'الرئيسية',
           tabBarIcon: () => <TabIcon label="tab_subscribe" />,
         }}
       />
