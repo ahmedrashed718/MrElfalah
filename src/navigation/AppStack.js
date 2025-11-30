@@ -16,7 +16,6 @@ import ExamQuestion from '../screens/appScreens/ExamQuestions';
 const Stack = createNativeStackNavigator();
 
 const AppStack = () => {
-  // التحقق من حالة المستخدم من Redux
   const isLoggedIn = useSelector(state => state.UserReducer.login);
 
   return (
@@ -26,7 +25,6 @@ const AppStack = () => {
         animation: 'slide_from_right',
       }}
       initialRouteName={isLoggedIn ? 'BottomTabs' : 'AuthStack'}>
-      {/* جميع الـ screens موجودة دائماً */}
       <Stack.Screen name="AuthStack" component={AuthStack} />
       <Stack.Screen name="BottomTabs" component={BottomTabs} />
       <Stack.Screen name="Home" component={Home} />

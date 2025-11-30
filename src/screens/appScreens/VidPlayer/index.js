@@ -12,14 +12,12 @@ import FullscreenModal from './components/FullscreenModal';
 const {width, height} = Dimensions.get('window');
 
 export default function VidPlayer({route, navigation}) {
-  // Get video URL from route params
   const videoUrl = route.params?.videoUrl || route.params?.url || '';
   const videoTitle = route.params?.title || 'مشغل الفيديو';
 
   const [paused, setPaused] = useState(true);
   const videoRef = useRef(null);
 
-  // Video control states
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(1);
@@ -39,10 +37,8 @@ export default function VidPlayer({route, navigation}) {
 
   const speedOptions = [0.5, 0.75, 1.0, 1.25, 1.5, 2.0];
 
-  // Calculate progress percentage
   const progressPercentage = duration > 0 ? (currentTime / duration) * 100 : 0;
 
-  // Format time helper
   const formatTime = seconds => {
     if (!seconds || isNaN(seconds)) {
       return '0:00';
@@ -58,7 +54,6 @@ export default function VidPlayer({route, navigation}) {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  // Video event handlers
   const onLoad = data => {
     setDuration(data.duration);
   };
@@ -72,7 +67,6 @@ export default function VidPlayer({route, navigation}) {
     setCurrentTime(0);
   };
 
-  // Seek video
   const seekTo = time => {
     if (videoRef.current) {
       videoRef.current.seek(time);
@@ -80,7 +74,6 @@ export default function VidPlayer({route, navigation}) {
     }
   };
 
-  // Handle progress bar press
   const handleProgressPress = event => {
     if (duration <= 0) {
       return;
@@ -93,20 +86,18 @@ export default function VidPlayer({route, navigation}) {
     seekTo(newTime);
   };
 
-  // Handle fullscreen progress bar press
   const handleFullscreenProgressPress = event => {
     if (duration <= 0) {
       return;
     }
     const {locationX} = event.nativeEvent;
     const screenWidth = Dimensions.get('window').width;
-    const progressBarWidth = screenWidth - RFValue(40); // Fullscreen padding
+    const progressBarWidth = screenWidth - RFValue(40);
     const progress = Math.max(0, Math.min(1, locationX / progressBarWidth));
     const newTime = progress * duration;
     seekTo(newTime);
   };
 
-  // Handle volume slider press
   const handleVolumePress = event => {
     const {locationX} = event.nativeEvent;
     const screenWidth = Dimensions.get('window').width;
@@ -124,34 +115,28 @@ export default function VidPlayer({route, navigation}) {
     }
   };
 
-  // Toggle play/pause
   const togglePlayPause = () => {
     setPaused(!paused);
   };
 
-  // Toggle mute
   const toggleMute = () => {
     setMuted(!muted);
   };
 
-  // Change playback rate
   const changeSpeed = speed => {
     setPlaybackRate(speed);
     setShowSpeedModal(false);
   };
 
-  // Change quality
   const changeQuality = quality => {
     setSelectedQuality(quality);
     setShowQualityModal(false);
   };
 
-  // Toggle controls visibility
   const toggleControls = () => {
     setShowControls(!showControls);
   };
 
-  // Auto-hide controls
   useEffect(() => {
     if (!paused && showControls) {
       const timer = setTimeout(() => {
@@ -163,15 +148,12 @@ export default function VidPlayer({route, navigation}) {
     }
   }, [paused, showControls]);
 
-  // If no video URL provided, show error or return
   if (!videoUrl) {
     return (
       <View style={styles.container}>
         <AppHeader title={videoTitle} />
         <View style={styles.errorContainer}>
-          <View style={styles.errorCard}>
-            {/* You can add an error message here */}
-          </View>
+          <View style={styles.errorCard} />
         </View>
       </View>
     );
@@ -182,7 +164,6 @@ export default function VidPlayer({route, navigation}) {
       <StatusBar barStyle="light-content" />
       <AppHeader title={videoTitle} />
 
-      {/* Quality Modal */}
       <QualityModal
         visible={showQualityModal}
         qualityOptions={qualityOptions}
@@ -191,7 +172,6 @@ export default function VidPlayer({route, navigation}) {
         onSelectQuality={changeQuality}
       />
 
-      {/* Speed Modal */}
       <SpeedModal
         visible={showSpeedModal}
         speedOptions={speedOptions}
@@ -200,7 +180,6 @@ export default function VidPlayer({route, navigation}) {
         onSelectSpeed={changeSpeed}
       />
 
-      {/* Video Player */}
       <View style={styles.videoSection}>
         <VideoPlayer
           videoRef={videoRef}
@@ -217,7 +196,6 @@ export default function VidPlayer({route, navigation}) {
           onToggleControls={toggleControls}
         />
 
-        {/* Video Controls */}
         {showControls && (
           <VideoControls
             currentTime={currentTime}
@@ -241,7 +219,6 @@ export default function VidPlayer({route, navigation}) {
         )}
       </View>
 
-      {/* Fullscreen Modal */}
       <FullscreenModal
         visible={fullscreen}
         videoRef={videoRef}

@@ -120,7 +120,6 @@ export default function BottomTabs() {
         tabBarBackground: () => <TabBarBackground />,
         tabBarLabelStyle: styles.labelStyle,
       }}>
-      {/* Home Tab 1 */}
       <BottomTab.Screen
         name={'Home'}
         component={Home}
@@ -136,7 +135,6 @@ export default function BottomTabs() {
           ),
         }}
       />
-      {/* Home Tab 2 */}
       <BottomTab.Screen
         name={'QuestionBank'}
         component={QuestionBank}
@@ -153,7 +151,6 @@ export default function BottomTabs() {
         }}
       />
 
-      {/* Middle Subscribe Button */}
       <BottomTab.Screen
         name={'المناهج'}
         component={Courses}
@@ -163,7 +160,6 @@ export default function BottomTabs() {
         }}
       />
 
-      {/* Home Tab 3 */}
       <BottomTab.Screen
         name={'بنك الاسئله'}
         component={Exams}
@@ -180,7 +176,6 @@ export default function BottomTabs() {
         }}
       />
 
-      {/* Home Tab 4 */}
       <BottomTab.Screen
         name={'الملف الشخصي'}
         component={Profile}

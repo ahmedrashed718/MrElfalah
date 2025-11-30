@@ -99,7 +99,6 @@ export default function SignUpScreen() {
     if (errors.password) {
       setErrors(prev => ({...prev, password: ''}));
     }
-    // Also clear confirm password error if passwords match
     if (errors.confirmPassword && text === confirmPassword) {
       setErrors(prev => ({...prev, confirmPassword: ''}));
     }
@@ -140,7 +139,6 @@ export default function SignUpScreen() {
           .replace(/\s+/g, '')
           .replace(/[-+()]/g, '');
 
-        // إرسال البيانات بصيغة JSON
         const signupData = {
           phone: cleanedPhone,
           student_name: fullName.trim(),
@@ -161,7 +159,6 @@ export default function SignUpScreen() {
         console.log('Signup Response:', response);
 
         if (response && response.status === 'success') {
-          // إظهار رسالة نجاح
           Toast.show({
             type: 'success',
             text1: 'تم التسجيل بنجاح!',
@@ -170,12 +167,10 @@ export default function SignUpScreen() {
             visibilityTime: 2000,
           });
 
-          // التنقل إلى شاشة تسجيل الدخول
           setTimeout(() => {
             navigation.navigate('Login');
           }, 500);
         } else {
-          // إظهار رسالة خطأ من الاستجابة
           const errorMessage =
             typeof response?.message === 'string'
               ? response.message
@@ -193,7 +188,6 @@ export default function SignUpScreen() {
           setLoading(false);
         }
       } catch (error) {
-        // إظهار رسالة خطأ عامة
         Toast.show({
           type: 'error',
           text1: 'حدث خطأ',
@@ -209,7 +203,6 @@ export default function SignUpScreen() {
 
   return (
     <View style={styles.wrapper}>
-      {/* Background */}
       <LinearGradient
         colors={[COLORS.primary, COLORS.secondary]}
         start={{x: 0, y: 0}}
@@ -220,12 +213,10 @@ export default function SignUpScreen() {
       <ScrollView
         contentContainerStyle={styles.scrollBody}
         showsVerticalScrollIndicator={false}>
-        {/* Card (Full Screen, Mobile Friendly) */}
         <View style={styles.card}>
           <Text style={styles.title}>تسجيل حساب جديد 📝</Text>
           <Text style={styles.subtitle}>أدخل بياناتك للمتابعة</Text>
 
-          {/* Phone */}
           <View style={styles.inputContainer}>
             <Text style={styles.label}>رقم الهاتف 📱</Text>
             <TextInput
@@ -244,7 +235,6 @@ export default function SignUpScreen() {
             ) : null}
           </View>
 
-          {/* Full Name */}
           <View style={styles.inputContainer}>
             <Text style={styles.label}>الاسم الكامل 🧑‍🎓</Text>
             <TextInput
@@ -259,7 +249,6 @@ export default function SignUpScreen() {
             ) : null}
           </View>
 
-          {/* Password */}
           <View style={styles.inputContainer}>
             <Text style={styles.label}>كلمة المرور 🔐</Text>
             <TextInput
@@ -275,7 +264,6 @@ export default function SignUpScreen() {
             ) : null}
           </View>
 
-          {/* Confirm Password */}
           <View style={styles.inputContainer}>
             <Text style={styles.label}>تأكيد كلمة المرور 🔒</Text>
             <TextInput
@@ -294,7 +282,6 @@ export default function SignUpScreen() {
             ) : null}
           </View>
 
-          {/* Register Button */}
           <LinearGradient
             colors={['#31D87F', '#00B76B']}
             start={{x: 0, y: 0}}
@@ -312,7 +299,6 @@ export default function SignUpScreen() {
             </TouchableOpacity>
           </LinearGradient>
 
-          {/* Login Link */}
           <TouchableOpacity onPress={() => navigation.navigate('Login')}>
             <Text style={styles.loginLink}>لديك حساب؟ سجل الدخول</Text>
           </TouchableOpacity>
@@ -353,7 +339,6 @@ const styles = StyleSheet.create({
 
   title: {
     fontSize: RFValue(22),
-    // fontWeight: '900',
     color: '#495ECD',
     marginBottom: RFValue(5),
     ...FONTS.body2,

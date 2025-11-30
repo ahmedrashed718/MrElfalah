@@ -19,7 +19,6 @@ const colorPalette = [
   ['#4FACFE', '#00F2FE'],
 ];
 
-// Sample question bank data
 const questionBanks = [
   {
     id: 1,
@@ -95,7 +94,6 @@ export default function QuestionBank({navigation}) {
   };
 
   return (
-    // <ScreensContainer>
     <>
       <AppHeader title={'بنك الاسئلة'} showBack={false} />
 
@@ -107,8 +105,7 @@ export default function QuestionBank({navigation}) {
         contentContainerStyle={styles.listContent}
         ListFooterComponent={<View style={styles.footer} />}
       />
-      </>
-    // </ScreensContainer>
+    </>
   );
 }
 

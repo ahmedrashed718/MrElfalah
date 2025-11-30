@@ -21,7 +21,6 @@ const ScreensContainer = ({
           animated
           showHideTransition="fade"
           style={{
-            // backgroundColor: COLORS.primary,
             hight: StatusBar.currentHeight,
           }}
         />

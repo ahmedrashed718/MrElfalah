@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import {createSlice} from '@reduxjs/toolkit';
 
 const AppDataReducer = createSlice({
   name: 'AppDataReducer',
@@ -9,38 +9,37 @@ const AppDataReducer = createSlice({
     notificationsLoading: true,
     reports_data: [],
     currentHomeTabView: {},
-    isOpenPayment:false
-
+    isOpenPayment: false,
   },
   reducers: {
     setHome(state, action) {
       const data = action.payload;
-      return { ...state, homeData: data, homeLoading: false };
+      return {...state, homeData: data, homeLoading: false};
     },
     setReports(state, action) {
       const data = action.payload;
-      return { ...state, reports_data: data };
+      return {...state, reports_data: data};
     },
     setHomeLoading(state, action) {
       const data = action.payload;
-      return { ...state, homeLoading: data };
+      return {...state, homeLoading: data};
     },
     setNotifications(state, action) {
       const data = action.payload;
-      return { ...state, notifications: data, notificationsLoading: false };
+      return {...state, notifications: data, notificationsLoading: false};
     },
     setIsOpenPayment(state, action) {
       const data = action.payload;
-      return { ...state, isOpenPayment: data,  };
+      return {...state, isOpenPayment: data};
     },
     setNotificationsLoading(state, action) {
       const data = action.payload;
-      return { ...state, notificationsLoading: data };
+      return {...state, notificationsLoading: data};
     },
     setCurrentHomeTabView(state, action) {
       const data = action.payload;
-      return { ...state, currentHomeTabView: data };
-    }
+      return {...state, currentHomeTabView: data};
+    },
   },
 });
 
@@ -51,6 +50,6 @@ export const {
   setNotificationsLoading,
   setReports,
   setCurrentHomeTabView,
-  setIsOpenPayment
+  setIsOpenPayment,
 } = AppDataReducer.actions;
 export default AppDataReducer.reducer;

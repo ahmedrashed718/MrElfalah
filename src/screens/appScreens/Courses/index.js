@@ -12,7 +12,6 @@ export default function CoursesScreen({navigation}) {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // الحصول على بيانات المستخدم من Redux
   const userData = useSelector(state => state.UserReducer.userData);
   const token = useSelector(state => state.UserReducer.token);
 
@@ -20,7 +19,6 @@ export default function CoursesScreen({navigation}) {
     try {
       setLoading(true);
 
-      // التحقق من وجود id و token
       if (!userData?.student_id && !userData?.id) {
         Toast.show({
           type: 'error',
@@ -45,7 +43,6 @@ export default function CoursesScreen({navigation}) {
         return;
       }
 
-      // إرسال الطلب POST مع id و token
       const response = await fetchData('POST', '/courses/select_courses.php', {
         student_id: userData?.student_id || userData?.id,
         token_value: token,
@@ -53,7 +50,6 @@ export default function CoursesScreen({navigation}) {
       });
 
       if (response && response.status === 'success') {
-        // البيانات قد تأتي في response.data أو response.message
         const coursesData = response.data || response.message || [];
         setCourses(Array.isArray(coursesData) ? coursesData : []);
       } else {
@@ -87,11 +83,8 @@ export default function CoursesScreen({navigation}) {
 
   return (
     <View style={styles.root}>
-      {/* Header */}
       <AppHeader title="المناهج" showBack={false} />
-      {/* <HeadPage title="المناهج" /> */}
 
-      {/* List */}
       {loading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#4FACFE" />

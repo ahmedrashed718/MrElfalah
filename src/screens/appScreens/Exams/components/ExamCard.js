@@ -8,9 +8,7 @@ import {FONTS} from '../../../../constants';
 const ExamCard = ({item, cardWidth, navigation}) => {
   return (
     <View style={[styles.cardContainer, {width: cardWidth}]}>
-      {/* Top Gradient */}
       <LinearGradient colors={item.colors} style={styles.cardTop}>
-        {/* Trophy Icon - Top Left */}
         <Ionicons
           name="trophy-outline"
           size={RFValue(20)}
@@ -18,7 +16,6 @@ const ExamCard = ({item, cardWidth, navigation}) => {
           style={styles.trophyIcon}
         />
 
-        {/* Subject Icon - Top Right */}
         <View style={styles.subjectIconContainer}>
           <Ionicons
             name={item.icon}
@@ -28,7 +25,6 @@ const ExamCard = ({item, cardWidth, navigation}) => {
           />
         </View>
 
-        {/* Title */}
         <View style={styles.titleContainer}>
           <Text style={styles.cardTitle} numberOfLines={2}>
             {item.title}
@@ -36,14 +32,11 @@ const ExamCard = ({item, cardWidth, navigation}) => {
         </View>
       </LinearGradient>
 
-      {/* Bottom Content */}
       <View style={styles.cardContent}>
-        {/* Description */}
         <Text style={styles.description} numberOfLines={2}>
           {item.description}
         </Text>
 
-        {/* Time Section */}
         <View style={styles.metaSection}>
           <Text style={styles.metaLabel}>الوقت:</Text>
           <View style={styles.metaValueContainer}>
@@ -54,7 +47,6 @@ const ExamCard = ({item, cardWidth, navigation}) => {
           </View>
         </View>
 
-        {/* Date Section */}
         <View style={styles.metaSection}>
           <Text style={styles.metaLabel}>تاريخ الانتهاء:</Text>
           <View style={styles.metaValueContainer}>
@@ -65,7 +57,6 @@ const ExamCard = ({item, cardWidth, navigation}) => {
           </View>
         </View>
 
-        {/* Start Exam Button with Gradient */}
         <TouchableOpacity
           activeOpacity={0.8}
           onPress={() =>
@@ -144,9 +135,7 @@ const styles = StyleSheet.create({
     borderColor: '#000',
   },
 
-  subjectIcon: {
-    // Icon styling
-  },
+  subjectIcon: {},
 
   titleContainer: {
     marginTop: RFValue(10),

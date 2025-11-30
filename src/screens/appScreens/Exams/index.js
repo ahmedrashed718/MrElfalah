@@ -33,7 +33,6 @@ const defaultIcons = [
   'school',
 ];
 
-// Helper function to map API exam data to component format
 const mapExamData = (exam, index) => {
   const colorIndex = index % defaultColors.length;
   return {
@@ -53,7 +52,6 @@ export default function ExamsScreen({navigation}) {
   const [exams, setExams] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // الحصول على بيانات المستخدم من Redux
   const userData = useSelector(state => state.UserReducer.userData);
   const token = useSelector(state => state.UserReducer.token);
 
@@ -65,12 +63,10 @@ export default function ExamsScreen({navigation}) {
     return () => subscription?.remove();
   }, []);
 
-  // Fetch exams from API
   const fetchExams = useCallback(async () => {
     try {
       setLoading(true);
 
-      // التحقق من وجود id و token
       if (!userData?.student_id && !userData?.id) {
         Toast.show({
           type: 'error',
@@ -95,7 +91,6 @@ export default function ExamsScreen({navigation}) {
         return;
       }
 
-      // إرسال الطلب POST إلى API
       const response = await fetchData('POST', '/exams/get_exams.php', {
         student_id: userData?.student_id || userData?.id,
         token_value: token,
@@ -103,11 +98,9 @@ export default function ExamsScreen({navigation}) {
       });
 
       if (response && response.status === 'success') {
-        // البيانات قد تأتي في response.data أو response.message
         const examsData = response.data || response.message || [];
         const examsArray = Array.isArray(examsData) ? examsData : [];
 
-        // تحويل البيانات إلى الصيغة المطلوبة
         const mappedExams = examsArray.map((exam, index) =>
           mapExamData(exam, index),
         );

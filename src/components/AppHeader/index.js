@@ -5,7 +5,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   Platform,
-  // StatusBar,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {useNavigation} from '@react-navigation/native';
@@ -38,7 +37,6 @@ export default function AppHeader({
           style={styles.gradient}>
           <View style={styles.content}>
             <View style={styles.row}>
-              {/* Back Button */}
               {showBack ? (
                 <TouchableOpacity
                   style={styles.backButton}
@@ -54,7 +52,6 @@ export default function AppHeader({
                 <View style={styles.placeholder} />
               )}
 
-              {/* Title */}
               <View style={styles.titleContainer}>
                 <Text
                   style={[
@@ -66,7 +63,6 @@ export default function AppHeader({
                 </Text>
               </View>
 
-              {/* Right Icon or Spacer */}
               {rightIcon ? (
                 <TouchableOpacity
                   style={styles.rightButton}
@@ -89,7 +85,6 @@ const styles = StyleSheet.create({
   container: {
     borderBottomLeftRadius: RFValue(30),
     borderBottomRightRadius: RFValue(30),
-    // backgroundColor: 'red',
     ...Platform.select({
       ios: {
         shadowColor: COLORS.black,

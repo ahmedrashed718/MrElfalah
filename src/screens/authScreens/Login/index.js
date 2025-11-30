@@ -35,16 +35,12 @@ export default function LoginScreen({navigation}) {
   });
 
   const validatePhoneNumber = phone => {
-    // Remove any spaces or special characters for validation
     const cleanedPhone = phone.replace(/\s+/g, '').replace(/[-+()]/g, '');
 
-    // Check if empty
     if (!phone.trim()) {
       return 'رقم الهاتف مطلوب';
     }
 
-    // Check if it's a valid phone number (Egyptian format: 10-11 digits)
-    // Supports formats like: 01xxxxxxxxx, 010xxxxxxxx, etc.
     if (!/^0?1[0-2,5]{1}[0-9]{8}$/.test(cleanedPhone)) {
       return 'يرجى إدخال رقم هاتف صحيح';
     }
@@ -57,7 +53,6 @@ export default function LoginScreen({navigation}) {
       return 'كلمة المرور مطلوبة';
     }
 
-    // Check minimum length
     if (pass.length < 4) {
       return 'كلمة المرور يجب أن تكون 4 أحرف على الأقل';
     }
@@ -91,12 +86,10 @@ export default function LoginScreen({navigation}) {
     if (!phoneError && !passwordError) {
       setLoading(true);
       try {
-        // تنظيف رقم الهاتف من المسافات والرموز
         const cleanedPhone = phoneNumber
           .replace(/\s+/g, '')
           .replace(/[-+()]/g, '');
 
-        // إرسال البيانات بصيغة JSON
         const loginData = {
           email: cleanedPhone,
           pass: password,
@@ -114,24 +107,20 @@ export default function LoginScreen({navigation}) {
         console.log('Login Response:', response);
 
         if (response && response.status === 'success') {
-          // البيانات تأتي في response.message (object)
           const userData = response.message || response.data;
 
           if (userData) {
             dispatch(setUser(userData));
-            // حفظ التوكن
             const token = userData.token_value || '';
             if (token) {
               dispatch(setToken(token));
             }
 
-            // حفظ الجلسة في AsyncStorage
             await Auth.saveSession(userData, token);
           }
 
           dispatch(modifyIsLogin(true));
 
-          // إظهار رسالة نجاح
           const userName =
             typeof userData === 'object' && userData?.student_name
               ? userData.student_name
@@ -144,7 +133,6 @@ export default function LoginScreen({navigation}) {
             visibilityTime: 2000,
           });
 
-          // التنقل إلى BottomTabs مع reset لمسح الـ stack
           setTimeout(() => {
             navigation.reset({
               index: 0,
@@ -152,7 +140,6 @@ export default function LoginScreen({navigation}) {
             });
           }, 500);
         } else {
-          // إظهار رسالة خطأ من الاستجابة
           const errorMessage =
             typeof response?.message === 'string'
               ? response.message
@@ -170,7 +157,6 @@ export default function LoginScreen({navigation}) {
           setLoading(false);
         }
       } catch (error) {
-        // إظهار رسالة خطأ عامة
         Toast.show({
           type: 'error',
           text1: 'حدث خطأ',
@@ -197,13 +183,11 @@ export default function LoginScreen({navigation}) {
       <ScrollView
         contentContainerStyle={styles.scrollBody}
         showsVerticalScrollIndicator={false}>
-        {/* Card */}
         <View style={styles.card}>
           <Text style={styles.title}>تسجيل الدخول ✨</Text>
 
           <Text style={styles.subtitle}>ادخل بياناتك للمتابعة 🎒</Text>
 
-          {/* Phone Number */}
           <View style={styles.inputContainer}>
             <Text style={styles.label}>رقم الهاتف 📱</Text>
             <TextInput
@@ -222,7 +206,6 @@ export default function LoginScreen({navigation}) {
             ) : null}
           </View>
 
-          {/* Password */}
           <View style={styles.inputContainer}>
             <Text style={styles.label}>كلمة المرور 🔐</Text>
             <TextInput
@@ -238,7 +221,6 @@ export default function LoginScreen({navigation}) {
             ) : null}
           </View>
 
-          {/* Login button */}
           <LinearGradient
             colors={['#5AB0FF', '#7560FF']}
             start={{x: 0, y: 0}}
@@ -256,7 +238,6 @@ export default function LoginScreen({navigation}) {
             </TouchableOpacity>
           </LinearGradient>
 
-          {/* Help & Register */}
           <TouchableOpacity style={styles.helpBtn}>
             <Text style={styles.helpText}>هل تحتاج للمساعدة؟ 💬</Text>
           </TouchableOpacity>
@@ -347,7 +328,6 @@ const styles = StyleSheet.create({
     textAlign: 'right',
     borderWidth: 1,
     borderColor: '#E3E6EB',
-    // justifyContent: 'center',
     alignItems: 'center',
     ...FONTS.body4,
   },
@@ -415,7 +395,6 @@ const styles = StyleSheet.create({
     fontSize: RFValue(11),
     color: '#FF4444',
     marginTop: RFValue(4),
-    // textAlign: 'right',
     ...FONTS.body5,
   },
 });

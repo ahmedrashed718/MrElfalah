@@ -45,7 +45,6 @@ export default function HomeScreen() {
     },
   ];
 
-  // Quick actions
   const quickActions = [
     {
       id: 1,
@@ -73,7 +72,6 @@ export default function HomeScreen() {
     },
   ];
 
-  // Latest courses
   const latestCourses = [
     {
       id: 1,
@@ -97,7 +95,6 @@ export default function HomeScreen() {
     },
   ];
 
-  // Transfer Numbers
   const transferNumbers = [
     {
       id: 1,
@@ -115,7 +112,6 @@ export default function HomeScreen() {
     },
   ];
 
-  // Contact Numbers
   const contactNumbers = [
     {
       id: 1,
@@ -158,16 +154,13 @@ export default function HomeScreen() {
         style={styles.container}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}>
-        {/* Hero Section */}
         <Animatable.View animation="fadeInDown" style={styles.heroSection}>
           <View style={styles.welcomeContainer}>
-            {/* <Animatable.View animation="fadeInDown" delay={100} style={styles.logoContainer}> */}
             <Image
               source={Images.flahLogo}
               style={styles.logo}
               resizeMode="contain"
             />
-            {/* </Animatable.View> */}
             <Text style={styles.greetingText}>مرحباً بعودتك 👋</Text>
             <GradientText style={styles.userName}>
               أهلا بك مع مستر الفلاح
@@ -178,7 +171,6 @@ export default function HomeScreen() {
           </View>
         </Animatable.View>
 
-        {/* Stats Section */}
         <View style={styles.statsContainer}>
           <Text style={styles.sectionTitle}>إحصائياتك</Text>
           <View style={styles.statsGrid}>
@@ -188,7 +180,6 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        {/* Quick Actions Section */}
         <View style={styles.actionsSection}>
           <Text style={styles.sectionTitle}>ابدأ التعلم الآن</Text>
           {quickActions.map((item, index) => (
@@ -201,7 +192,6 @@ export default function HomeScreen() {
           ))}
         </View>
 
-        {/* Latest Courses Section */}
         <View style={styles.coursesSection}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>دوراتك الأخيرة</Text>
@@ -226,7 +216,6 @@ export default function HomeScreen() {
           ))}
         </View>
 
-        {/* Transfer Numbers Section */}
         <View style={styles.numbersSection}>
           <SectionHeader
             title="أرقام التحويل"
@@ -242,7 +231,6 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        {/* Contact Numbers Section */}
         <View style={styles.numbersSection}>
           <SectionHeader
             title="أرقام التواصل و الاستفسار"
@@ -254,7 +242,6 @@ export default function HomeScreen() {
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            // pagingEnabled={true}
             contentContainerStyle={styles.phoneCardsScrollContainer}>
             {contactNumbers.map((item, index) => (
               <PhoneNumberCard

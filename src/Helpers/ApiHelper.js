@@ -8,15 +8,12 @@ const handleResponse = async response => {
   try {
     const res = await response.json();
     if (res.status == 'success') {
-      // البيانات يمكن أن تكون في message أو data
-      // في حالة الـ login، البيانات تأتي في message كـ object
       return {
         status: 'success',
         message: res.message || res.data || null,
         data: res?.data || res?.message || null,
       };
     } else {
-      // في حالة الخطأ من API (مثل بيانات خاطئة)
       if (
         res.status === 'out' ||
         response.status === 401 ||
@@ -29,7 +26,6 @@ const handleResponse = async response => {
           message: res?.message || 'Session expired, please log in again',
         };
       } else {
-        // خطأ في البيانات أو أي خطأ آخر - نُرجع الخطأ للتعامل معه في الكود الذي استدعى fetchData
         return {
           status: 'error',
           message: res?.message || 'حدث خطأ، يرجى المحاولة مرة أخرى',
@@ -37,7 +33,6 @@ const handleResponse = async response => {
       }
     }
   } catch (parseError) {
-    // في حالة فشل parse JSON
     return {
       status: 'error',
       message: 'فشل في قراءة الاستجابة من الخادم',
@@ -64,13 +59,11 @@ export const fetchData = async (
       if (contentType === 'application/json') {
         options.body = JSON.stringify(data);
       } else {
-        // form-data أو x-www-form-urlencoded
         options.body = data;
       }
     }
 
     const response = await fetch(url, options);
-    // console.log((url, options));
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }

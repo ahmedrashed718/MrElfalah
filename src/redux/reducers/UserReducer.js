@@ -1,7 +1,7 @@
-import { createSlice } from '@reduxjs/toolkit';
+import {createSlice} from '@reduxjs/toolkit';
 
 const UserReducer = createSlice({
-  name: 'UserReducer', 
+  name: 'UserReducer',
   initialState: {
     userData: {},
     temp_data: {},
@@ -12,68 +12,67 @@ const UserReducer = createSlice({
       new_tips: true,
       special_offer: true,
     },
-    token:"",
-    currancyObj:{},
-    priceRate:{},
-    skipLogin:false,
+    token: '',
+    currancyObj: {},
+    priceRate: {},
+    skipLogin: false,
     network: true,
     login: false,
     first: false,
-    selectedLocation:"",
-    cartSnack:{}
-
+    selectedLocation: '',
+    cartSnack: {},
   },
   reducers: {
     setUser(state, action) {
       const user = action.payload;
-      return { ...state, userData: user, login: true, skipLogin:false };
+      return {...state, userData: user, login: true, skipLogin: false};
     },
     setSckipLogin(state, action) {
       const user = action.payload;
-      return { ...state, skipLogin:false };
+      return {...state, skipLogin: false};
     },
     setTempUser(state, action) {
       const user = action.payload;
-      return { ...state, temp_data: user };
+      return {...state, temp_data: user};
     },
 
     removeUser(state, action) {
-      return { ...state, userData: {}, login: false };
+      return {...state, userData: {}, login: false};
     },
     setToken(state, action) {
-      return { ...state,  token: action.payload };
+      return {...state, token: action.payload};
     },
     setSelectedLocation(state, action) {
-      return { ...state,  selectedLocation: action.payload };
+      return {...state, selectedLocation: action.payload};
     },
     setCurrancyObj(state, action) {
-      return { ...state,  currancyObj: action.payload };
+      return {...state, currancyObj: action.payload};
     },
     setPriceRate(state, action) {
-      return { ...state,  priceRate: action.payload };
+      return {...state, priceRate: action.payload};
     },
     modifyNetWork(state, action) {
-      return { ...state, network: action.payload };
+      return {...state, network: action.payload};
     },
     modifyIsFirst(state, action) {
-      return { ...state, first: action.payload };
+      return {...state, first: action.payload};
     },
     modifyIsLogin(state, action) {
-      return { ...state, login: action.payload };
+      return {...state, login: action.payload};
     },
-    setSkipLogin(state,action){
-      const skip = action.payload
-      return { ...state, skipLogin: skip };
+    setSkipLogin(state, action) {
+      const skip = action.payload;
+      return {...state, skipLogin: skip};
     },
-    setCartSnack(state,action){
-      const updateSnack = action.payload
-      return { ...state, cartSnack: updateSnack };
+    setCartSnack(state, action) {
+      const updateSnack = action.payload;
+      return {...state, cartSnack: updateSnack};
     },
 
     setNotificationSetting(state, action) {
       const settings = action.payload;
-      return { ...state, notification_setting: settings };
-    }
+      return {...state, notification_setting: settings};
+    },
   },
 });
 
@@ -91,7 +90,6 @@ export const {
   setCurrancyObj,
   setPriceRate,
   setSelectedLocation,
-  setCartSnack
-
+  setCartSnack,
 } = UserReducer.actions;
 export default UserReducer.reducer;

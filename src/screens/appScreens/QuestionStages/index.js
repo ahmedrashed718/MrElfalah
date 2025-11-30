@@ -23,7 +23,6 @@ const colorPalette = [
   ['#4FACFE', '#00F2FE'],
 ];
 
-// Sample stages data
 const questionStages = [
   {
     id: 1,
@@ -90,7 +89,6 @@ export default function QuestionStages({route, navigation}) {
       <AppHeader
         title={'مراحل الأسئلة'}
         showBack={true}
-        // reducedShadow={true}
       />
 
       <FlatList
@@ -146,7 +144,6 @@ export default function QuestionStages({route, navigation}) {
 
 const styles = StyleSheet.create({
   titleCardWrapper: {
-    // paddingHorizontal: RFValue(15),
     paddingTop: RFValue(5),
     paddingBottom: RFValue(5),
   },
@@ -196,7 +193,6 @@ const styles = StyleSheet.create({
     fontSize: RFValue(11),
     color: 'rgba(255, 255, 255, 0.9)',
     marginBottom: RFValue(4),
-    // textAlign: 'center',
     alignSelf: 'flex-start',
     ...FONTS.body4,
   },
@@ -205,7 +201,6 @@ const styles = StyleSheet.create({
     fontSize: RFValue(16),
     color: COLORS.white,
     fontWeight: 'bold',
-    // textAlign: 'right',
     lineHeight: RFValue(24),
     alignSelf: 'flex-start',
     ...FONTS.h3,

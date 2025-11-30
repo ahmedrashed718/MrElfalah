@@ -1,9 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Auth = {
-  /**
-   * حفظ جلسة المستخدم في AsyncStorage
-   */
   saveSession: async (userData, token) => {
     try {
       await AsyncStorage.multiSet([
@@ -17,9 +14,6 @@ const Auth = {
     }
   },
 
-  /**
-   * تحميل جلسة المستخدم من AsyncStorage
-   */
   loadSession: async () => {
     try {
       const [userDataStr, token, isLoggedIn] = await AsyncStorage.multiGet([
@@ -43,12 +37,8 @@ const Auth = {
     }
   },
 
-  /**
-   * تسجيل الخروج - تنظيف جميع بيانات المستخدم من AsyncStorage
-   */
   logout: async () => {
     try {
-      // حذف جميع مفاتيح المصادقة
       await AsyncStorage.multiRemove([
         'userToken',
         'userData',
@@ -56,7 +46,6 @@ const Auth = {
         'token',
         'isLoggedIn',
       ]);
-      // يمكن إضافة المزيد من المفاتيح حسب الحاجة
     } catch (error) {
       console.error('Error during logout:', error);
     }

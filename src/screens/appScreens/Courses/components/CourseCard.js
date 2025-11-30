@@ -29,7 +29,6 @@ export default function CourseCard({item, onPress, index}) {
     [],
   );
 
-  // HANDLER CLICK ANIMATION
   const handlePress = () => {
     cardRef.current?.pulse(300);
     setTimeout(() => onPress?.(), 200);
@@ -41,21 +40,17 @@ export default function CourseCard({item, onPress, index}) {
       animation="swing"
       delay={index * 120}
       duration={700}
-      // easing="ease-out"
       style={styles.container}>
       <TouchableOpacity activeOpacity={0.9} onPress={handlePress}>
         <View style={styles.card}>
-          {/* IMAGE */}
           <Image source={{uri: item.course_photo_url}} style={styles.image} />
 
-          {/* Featured Badge */}
           {item.featured && (
             <View style={styles.featuredBadge}>
               <Text style={styles.featuredText}>مميز ⭐</Text>
             </View>
           )}
 
-          {/* Info */}
           <View style={styles.infoBox}>
             <Text style={styles.title}>{item.course_name}</Text>
             <Text style={styles.description}>{item.course_name}</Text>
@@ -84,8 +79,6 @@ export default function CourseCard({item, onPress, index}) {
   );
 }
 
-/* ================= STYLES ================= */
-
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: RFValue(10),
@@ -101,7 +94,6 @@ const styles = StyleSheet.create({
   },
   image: {
     width: '100%',
-    // flex: 1,
     height: RFValue(130),
     resizeMode: 'cover',
   },

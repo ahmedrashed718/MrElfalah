@@ -21,7 +21,6 @@ export default function CoursePlayer({navigation}) {
   const [points] = useState(0);
   const videoRef = useRef(null);
 
-  // Video control states
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(1);
@@ -35,7 +34,6 @@ export default function CoursePlayer({navigation}) {
   );
   const [fullscreen, setFullscreen] = useState(false);
 
-  // PDF Modal states
   const [showPDFModal, setShowPDFModal] = useState(false);
   const [pdfUrl, setPdfUrl] = useState('');
   const [pdfTitle, setPdfTitle] = useState('');
@@ -48,7 +46,6 @@ export default function CoursePlayer({navigation}) {
 
   const speedOptions = [0.5, 0.75, 1.0, 1.25, 1.5, 2.0];
 
-  // Calculate progress percentage
   const progressPercentage = duration > 0 ? (currentTime / duration) * 100 : 0;
 
   const lessons = [
@@ -117,7 +114,6 @@ export default function CoursePlayer({navigation}) {
     },
   ];
 
-  // GROUP BY CATEGORY
   const grouped = Object.values(
     lessons.reduce((acc, item) => {
       acc[item.category] = acc[item.category] || {
@@ -138,7 +134,6 @@ export default function CoursePlayer({navigation}) {
     setCurrentTime(0);
   };
 
-  // Format time helper
   const formatTime = seconds => {
     if (!seconds || isNaN(seconds)) {
       return '0:00';
@@ -154,7 +149,6 @@ export default function CoursePlayer({navigation}) {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  // Video event handlers
   const onLoad = data => {
     setDuration(data.duration);
   };
@@ -168,7 +162,6 @@ export default function CoursePlayer({navigation}) {
     setCurrentTime(0);
   };
 
-  // Seek video
   const seekTo = time => {
     if (videoRef.current) {
       videoRef.current.seek(time);
@@ -176,14 +169,11 @@ export default function CoursePlayer({navigation}) {
     }
   };
 
-  // Handle progress bar press
   const handleProgressPress = event => {
     if (duration <= 0) {
       return;
     }
     const {locationX} = event.nativeEvent;
-    // Get the actual width of the progress bar container
-    // margins (12*2) + padding (12*2) = ~48
     const screenWidth = Dimensions.get('window').width;
     const progressBarWidth = screenWidth - RFValue(48);
     const progress = Math.max(0, Math.min(1, locationX / progressBarWidth));
@@ -191,15 +181,13 @@ export default function CoursePlayer({navigation}) {
     seekTo(newTime);
   };
 
-  // Handle volume slider press
   const handleVolumePress = event => {
     const {locationX} = event.nativeEvent;
     const screenWidth = Dimensions.get('window').width;
-    // Calculate available width: screen - margins - padding - buttons
-    const buttonWidth = RFValue(40) * 3; // 3 buttons (mute, speed, quality)
-    const gaps = RFValue(8) * 3; // 3 gaps
-    const margins = RFValue(12) * 2; // left and right margins
-    const padding = RFValue(12) * 2; // left and right padding
+    const buttonWidth = RFValue(40) * 3;
+    const gaps = RFValue(8) * 3;
+    const margins = RFValue(12) * 2;
+    const padding = RFValue(12) * 2;
     const sliderWidth = screenWidth - margins - padding - buttonWidth - gaps;
     const newVolume = Math.max(0, Math.min(1, locationX / sliderWidth));
     setVolume(newVolume);
@@ -210,29 +198,24 @@ export default function CoursePlayer({navigation}) {
     }
   };
 
-  // Toggle play/pause
   const togglePlayPause = () => {
     setPaused(!paused);
   };
 
-  // Toggle mute
   const toggleMute = () => {
     setMuted(!muted);
   };
 
-  // Change playback rate
   const changeSpeed = speed => {
     setPlaybackRate(speed);
     setShowSpeedModal(false);
   };
 
-  // Change quality
   const changeQuality = quality => {
     setSelectedQuality(quality);
     setShowQualityModal(false);
   };
 
-  // Auto-hide controls
   useEffect(() => {
     if (!paused && showControls) {
       const timer = setTimeout(() => {
@@ -244,7 +227,6 @@ export default function CoursePlayer({navigation}) {
     }
   }, [paused, showControls]);
 
-  // PDF Modal handlers
   const handleOpenMemo = () => {
     setPdfUrl(
       'https://camp-coding.tech/teachersApp2023/test_camp/admin/uploads/1173748371_1664476196%20_064207.pdf',
@@ -269,7 +251,6 @@ export default function CoursePlayer({navigation}) {
     <View style={styles.container}>
       <AppHeader title={'دروس الدورة'} />
 
-      {/* Quality Modal */}
       <QualityModal
         visible={showQualityModal}
         qualityOptions={qualityOptions}
@@ -278,7 +259,6 @@ export default function CoursePlayer({navigation}) {
         onSelectQuality={changeQuality}
       />
 
-      {/* Speed Modal */}
       <SpeedModal
         visible={showSpeedModal}
         speedOptions={speedOptions}
@@ -287,7 +267,6 @@ export default function CoursePlayer({navigation}) {
         onSelectSpeed={changeSpeed}
       />
 
-      {/* PDF Modal */}
       <PDFModal
         visible={showPDFModal}
         pdfUrl={pdfUrl}

@@ -534,7 +534,6 @@ const styles = StyleSheet.create({
     fontSize: RFValue(16),
     ...FONTS.body4,
     textAlign: 'right',
-    // direction: 'ltr',
   },
 
   inputError: {
