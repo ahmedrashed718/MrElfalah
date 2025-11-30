@@ -330,6 +330,7 @@ const styles = StyleSheet.create({
     borderColor: '#E3E6EB',
     alignItems: 'center',
     ...FONTS.body4,
+    color: COLORS.black,
   },
 
   loginBtn: {
