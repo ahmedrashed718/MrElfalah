@@ -46,7 +46,7 @@ export default function CourseCard({item, onPress, index}) {
       <TouchableOpacity activeOpacity={0.9} onPress={handlePress}>
         <View style={styles.card}>
           {/* IMAGE */}
-          <Image source={{uri: item.image}} style={styles.image} />
+          <Image source={{uri: item.course_photo_url}} style={styles.image} />
 
           {/* Featured Badge */}
           {item.featured && (
@@ -57,8 +57,8 @@ export default function CourseCard({item, onPress, index}) {
 
           {/* Info */}
           <View style={styles.infoBox}>
-            <Text style={styles.title}>{item.title}</Text>
-            <Text style={styles.description}>{item.description}</Text>
+            <Text style={styles.title}>{item.course_name}</Text>
+            <Text style={styles.description}>{item.course_name}</Text>
 
             <TouchableOpacity style={styles.btn} onPress={handlePress}>
               <LinearGradient
@@ -101,6 +101,7 @@ const styles = StyleSheet.create({
   },
   image: {
     width: '100%',
+    // flex: 1,
     height: RFValue(130),
     resizeMode: 'cover',
   },

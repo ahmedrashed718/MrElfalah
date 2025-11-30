@@ -7,4 +7,5 @@ import CoursePlayer from './CoursePlayer';
 import ExamQuestion from './ExamQuestions';
 import ExamResults from './ExamResults';
 import QuestionStages from './QuestionStages';
-export {Home, Courses, Exams, QuestionBank, Profile, CoursePlayer, ExamResults, QuestionStages};
+import VidPlayer from './VidPlayer';
+export {Home, Courses, Exams, QuestionBank, Profile, CoursePlayer, ExamResults, QuestionStages, VidPlayer};

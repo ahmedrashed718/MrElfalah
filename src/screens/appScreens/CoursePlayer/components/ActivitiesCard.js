@@ -31,7 +31,10 @@ const ActivitiesCard = () => {
       icon: 'musical-notes',
       gradient: ['#4A90E2', '#9013FE'],
       onPress: () => {
-        // Navigate to lesson song
+        navigation.navigate('VidPlayer', {
+          videoUrl: 'https://example.com/video.mp4',
+          title: 'أغنية الدرس'
+        });
       },
     },
     {
@@ -40,7 +43,10 @@ const ActivitiesCard = () => {
       icon: 'mic',
       gradient: ['#FF6B6B', '#FF8E53'],
       onPress: () => {
-        // Navigate to pronunciation
+        navigation.navigate('VidPlayer', {
+          videoUrl: 'https://example.com/video.mp4',
+          title: 'نطق الكلمات'
+        });
       },
     },
     {
@@ -49,7 +55,10 @@ const ActivitiesCard = () => {
       icon: 'star',
       gradient: ['#FF6B9D', '#FF4757'],
       onPress: () => {
-        // Navigate to recitation
+        navigation.navigate('VidPlayer', {
+          videoUrl: 'https://example.com/video.mp4',
+          title: 'تسميع الكلمات'
+        });
       },
     },
     {

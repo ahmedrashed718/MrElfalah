@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   View,
   Text,
@@ -7,14 +7,206 @@ import {
   StyleSheet,
   ScrollView,
   Dimensions,
+  ActivityIndicator,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {RFValue} from 'react-native-responsive-fontsize';
 import {useNavigation} from '@react-navigation/native';
+import Toast from 'react-native-toast-message';
 import {COLORS, FONTS} from '../../../constants';
+import {fetchData} from '../../../Helpers/ApiHelper';
 const {height, width} = Dimensions.get('window');
 export default function SignUpScreen() {
   const navigation = useNavigation();
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [fullName, setFullName] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({
+    phoneNumber: '',
+    fullName: '',
+    password: '',
+    confirmPassword: '',
+  });
+
+  const validatePhoneNumber = phone => {
+    const cleanedPhone = phone.replace(/\s+/g, '').replace(/[-+()]/g, '');
+
+    if (!phone.trim()) {
+      return 'رقم الهاتف مطلوب';
+    }
+
+    if (!/^0?1[0-2,5]{1}[0-9]{8}$/.test(cleanedPhone)) {
+      return 'يرجى إدخال رقم هاتف صحيح';
+    }
+
+    return '';
+  };
+
+  const validateFullName = name => {
+    if (!name.trim()) {
+      return 'الاسم الكامل مطلوب';
+    }
+
+    if (name.trim().length < 3) {
+      return 'الاسم يجب أن يكون 3 أحرف على الأقل';
+    }
+
+    return '';
+  };
+
+  const validatePassword = pass => {
+    if (!pass.trim()) {
+      return 'كلمة المرور مطلوبة';
+    }
+
+    if (pass.length < 4) {
+      return 'كلمة المرور يجب أن تكون 4 أحرف على الأقل';
+    }
+
+    return '';
+  };
+
+  const validateConfirmPassword = (pass, confirmPass) => {
+    if (!confirmPass.trim()) {
+      return 'تأكيد كلمة المرور مطلوب';
+    }
+
+    if (pass !== confirmPass) {
+      return 'كلمة المرور غير متطابقة';
+    }
+
+    return '';
+  };
+
+  const handlePhoneChange = text => {
+    setPhoneNumber(text);
+    if (errors.phoneNumber) {
+      setErrors(prev => ({...prev, phoneNumber: ''}));
+    }
+  };
+
+  const handleFullNameChange = text => {
+    setFullName(text);
+    if (errors.fullName) {
+      setErrors(prev => ({...prev, fullName: ''}));
+    }
+  };
+
+  const handlePasswordChange = text => {
+    setPassword(text);
+    if (errors.password) {
+      setErrors(prev => ({...prev, password: ''}));
+    }
+    // Also clear confirm password error if passwords match
+    if (errors.confirmPassword && text === confirmPassword) {
+      setErrors(prev => ({...prev, confirmPassword: ''}));
+    }
+  };
+
+  const handleConfirmPasswordChange = text => {
+    setConfirmPassword(text);
+    if (errors.confirmPassword) {
+      setErrors(prev => ({...prev, confirmPassword: ''}));
+    }
+  };
+
+  const handleRegister = async () => {
+    const phoneError = validatePhoneNumber(phoneNumber);
+    const fullNameError = validateFullName(fullName);
+    const passwordError = validatePassword(password);
+    const confirmPasswordError = validateConfirmPassword(
+      password,
+      confirmPassword,
+    );
+
+    setErrors({
+      phoneNumber: phoneError,
+      fullName: fullNameError,
+      password: passwordError,
+      confirmPassword: confirmPasswordError,
+    });
+
+    if (
+      !phoneError &&
+      !fullNameError &&
+      !passwordError &&
+      !confirmPasswordError
+    ) {
+      setLoading(true);
+      try {
+        const cleanedPhone = phoneNumber
+          .replace(/\s+/g, '')
+          .replace(/[-+()]/g, '');
+
+        // إرسال البيانات بصيغة JSON
+        const signupData = {
+          phone: cleanedPhone,
+          student_name: fullName.trim(),
+          pass: password,
+          university_id: '1',
+          grade_id: '1',
+          mobile: true,
+        };
+
+        console.log('Signup Data:', signupData);
+
+        const response = await fetchData(
+          'POST',
+          '/auth/signup_2.php',
+          signupData,
+        );
+
+        console.log('Signup Response:', response);
+
+        if (response && response.status === 'success') {
+          // إظهار رسالة نجاح
+          Toast.show({
+            type: 'success',
+            text1: 'تم التسجيل بنجاح!',
+            text2: 'يمكنك الآن تسجيل الدخول',
+            position: 'top',
+            visibilityTime: 2000,
+          });
+
+          // التنقل إلى شاشة تسجيل الدخول
+          setTimeout(() => {
+            navigation.navigate('Login');
+          }, 500);
+        } else {
+          // إظهار رسالة خطأ من الاستجابة
+          const errorMessage =
+            typeof response?.message === 'string'
+              ? response.message
+              : typeof response?.message === 'object'
+              ? JSON.stringify(response.message)
+              : 'حدث خطأ، يرجى المحاولة مرة أخرى';
+
+          Toast.show({
+            type: 'error',
+            text1: 'فشل التسجيل',
+            text2: errorMessage,
+            position: 'top',
+            visibilityTime: 3000,
+          });
+          setLoading(false);
+        }
+      } catch (error) {
+        // إظهار رسالة خطأ عامة
+        Toast.show({
+          type: 'error',
+          text1: 'حدث خطأ',
+          text2:
+            error.message || 'حدث خطأ أثناء التسجيل، يرجى المحاولة مرة أخرى',
+          position: 'top',
+          visibilityTime: 3000,
+        });
+        setLoading(false);
+      }
+    }
+  };
+
   return (
     <View style={styles.wrapper}>
       {/* Background */}
@@ -40,8 +232,16 @@ export default function SignUpScreen() {
               placeholder="أدخل رقم هاتفك"
               placeholderTextColor="#888"
               keyboardType="phone-pad"
-              style={styles.input}
+              value={phoneNumber}
+              onChangeText={handlePhoneChange}
+              style={[
+                styles.input,
+                errors.phoneNumber ? styles.inputError : null,
+              ]}
             />
+            {errors.phoneNumber ? (
+              <Text style={styles.errorText}>{errors.phoneNumber}</Text>
+            ) : null}
           </View>
 
           {/* Full Name */}
@@ -50,8 +250,13 @@ export default function SignUpScreen() {
             <TextInput
               placeholder="اكتب اسمك كاملاً"
               placeholderTextColor="#888"
-              style={styles.input}
+              value={fullName}
+              onChangeText={handleFullNameChange}
+              style={[styles.input, errors.fullName ? styles.inputError : null]}
             />
+            {errors.fullName ? (
+              <Text style={styles.errorText}>{errors.fullName}</Text>
+            ) : null}
           </View>
 
           {/* Password */}
@@ -61,8 +266,13 @@ export default function SignUpScreen() {
               placeholder="••••••••"
               placeholderTextColor="#888"
               secureTextEntry
-              style={styles.input}
+              value={password}
+              onChangeText={handlePasswordChange}
+              style={[styles.input, errors.password ? styles.inputError : null]}
             />
+            {errors.password ? (
+              <Text style={styles.errorText}>{errors.password}</Text>
+            ) : null}
           </View>
 
           {/* Confirm Password */}
@@ -72,8 +282,16 @@ export default function SignUpScreen() {
               placeholder="••••••••"
               placeholderTextColor="#888"
               secureTextEntry
-              style={styles.input}
+              value={confirmPassword}
+              onChangeText={handleConfirmPasswordChange}
+              style={[
+                styles.input,
+                errors.confirmPassword ? styles.inputError : null,
+              ]}
             />
+            {errors.confirmPassword ? (
+              <Text style={styles.errorText}>{errors.confirmPassword}</Text>
+            ) : null}
           </View>
 
           {/* Register Button */}
@@ -82,8 +300,15 @@ export default function SignUpScreen() {
             start={{x: 0, y: 0}}
             end={{x: 1, y: 1}}
             style={styles.registerBtn}>
-            <TouchableOpacity style={styles.btnWrapper}>
-              <Text style={styles.registerText}>تسجيل حساب 🎉</Text>
+            <TouchableOpacity
+              style={styles.btnWrapper}
+              onPress={handleRegister}
+              disabled={loading}>
+              {loading ? (
+                <ActivityIndicator size="small" color="#fff" />
+              ) : (
+                <Text style={styles.registerText}>تسجيل حساب 🎉</Text>
+              )}
             </TouchableOpacity>
           </LinearGradient>
 
@@ -157,7 +382,7 @@ const styles = StyleSheet.create({
 
   input: {
     width: '100%',
-    height: RFValue(40),
+    height: RFValue(45),
     backgroundColor: '#F7F9FC',
     borderRadius: RFValue(10),
     paddingHorizontal: RFValue(10),
@@ -206,5 +431,18 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     ...FONTS.body4,
     marginTop: RFValue(15),
+  },
+
+  inputError: {
+    borderColor: '#FF4444',
+    borderWidth: 1.5,
+    backgroundColor: '#FFF5F5',
+  },
+
+  errorText: {
+    fontSize: RFValue(11),
+    color: '#FF4444',
+    marginTop: RFValue(4),
+    ...FONTS.body5,
   },
 });

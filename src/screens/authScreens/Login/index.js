@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   View,
   Text,
@@ -7,14 +7,184 @@ import {
   StyleSheet,
   ScrollView,
   Dimensions,
+  ActivityIndicator,
 } from 'react-native';
+import {useDispatch} from 'react-redux';
 import LinearGradient from 'react-native-linear-gradient';
 import {RFValue} from 'react-native-responsive-fontsize';
+import Toast from 'react-native-toast-message';
 import {COLORS, FONTS} from '../../../constants';
+import {
+  modifyIsLogin,
+  setUser,
+  setToken,
+} from '../../../redux/reducers/UserReducer';
+import {fetchData} from '../../../Helpers/ApiHelper';
+import Auth from '../../../Services';
 
 const {height, width} = Dimensions.get('window');
 
 export default function LoginScreen({navigation}) {
+  const dispatch = useDispatch();
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({
+    phoneNumber: '',
+    password: '',
+  });
+
+  const validatePhoneNumber = phone => {
+    // Remove any spaces or special characters for validation
+    const cleanedPhone = phone.replace(/\s+/g, '').replace(/[-+()]/g, '');
+
+    // Check if empty
+    if (!phone.trim()) {
+      return 'رقم الهاتف مطلوب';
+    }
+
+    // Check if it's a valid phone number (Egyptian format: 10-11 digits)
+    // Supports formats like: 01xxxxxxxxx, 010xxxxxxxx, etc.
+    if (!/^0?1[0-2,5]{1}[0-9]{8}$/.test(cleanedPhone)) {
+      return 'يرجى إدخال رقم هاتف صحيح';
+    }
+
+    return '';
+  };
+
+  const validatePassword = pass => {
+    if (!pass.trim()) {
+      return 'كلمة المرور مطلوبة';
+    }
+
+    // Check minimum length
+    if (pass.length < 4) {
+      return 'كلمة المرور يجب أن تكون 4 أحرف على الأقل';
+    }
+
+    return '';
+  };
+
+  const handlePhoneChange = text => {
+    setPhoneNumber(text);
+    if (errors.phoneNumber) {
+      setErrors(prev => ({...prev, phoneNumber: ''}));
+    }
+  };
+
+  const handlePasswordChange = text => {
+    setPassword(text);
+    if (errors.password) {
+      setErrors(prev => ({...prev, password: ''}));
+    }
+  };
+
+  const handleLogin = async () => {
+    const phoneError = validatePhoneNumber(phoneNumber);
+    const passwordError = validatePassword(password);
+
+    setErrors({
+      phoneNumber: phoneError,
+      password: passwordError,
+    });
+
+    if (!phoneError && !passwordError) {
+      setLoading(true);
+      try {
+        // تنظيف رقم الهاتف من المسافات والرموز
+        const cleanedPhone = phoneNumber
+          .replace(/\s+/g, '')
+          .replace(/[-+()]/g, '');
+
+        // إرسال البيانات بصيغة JSON
+        const loginData = {
+          email: cleanedPhone,
+          pass: password,
+          mobile: true,
+        };
+
+        console.log('Login Data:', loginData);
+
+        const response = await fetchData(
+          'POST',
+          '/auth/new_login.php',
+          loginData,
+        );
+
+        console.log('Login Response:', response);
+
+        if (response && response.status === 'success') {
+          // البيانات تأتي في response.message (object)
+          const userData = response.message || response.data;
+
+          if (userData) {
+            dispatch(setUser(userData));
+            // حفظ التوكن
+            const token = userData.token_value || '';
+            if (token) {
+              dispatch(setToken(token));
+            }
+
+            // حفظ الجلسة في AsyncStorage
+            await Auth.saveSession(userData, token);
+          }
+
+          dispatch(modifyIsLogin(true));
+
+          // إظهار رسالة نجاح
+          const userName =
+            typeof userData === 'object' && userData?.student_name
+              ? userData.student_name
+              : null;
+          Toast.show({
+            type: 'success',
+            text1: 'تم تسجيل الدخول بنجاح!',
+            text2: userName ? `مرحباً ${userName}` : 'مرحباً بك',
+            position: 'top',
+            visibilityTime: 2000,
+          });
+
+          // التنقل إلى BottomTabs مع reset لمسح الـ stack
+          setTimeout(() => {
+            navigation.reset({
+              index: 0,
+              routes: [{name: 'BottomTabs'}],
+            });
+          }, 500);
+        } else {
+          // إظهار رسالة خطأ من الاستجابة
+          const errorMessage =
+            typeof response?.message === 'string'
+              ? response.message
+              : typeof response?.message === 'object'
+              ? JSON.stringify(response.message)
+              : 'حدث خطأ، يرجى المحاولة مرة أخرى';
+
+          Toast.show({
+            type: 'error',
+            text1: 'فشل تسجيل الدخول',
+            text2: errorMessage,
+            position: 'top',
+            visibilityTime: 3000,
+          });
+          setLoading(false);
+        }
+      } catch (error) {
+        // إظهار رسالة خطأ عامة
+        Toast.show({
+          type: 'error',
+          text1: 'حدث خطأ',
+          text2:
+            error.message ||
+            'حدث خطأ أثناء تسجيل الدخول، يرجى المحاولة مرة أخرى',
+          position: 'top',
+          visibilityTime: 3000,
+        });
+        setLoading(false);
+      }
+    }
+  };
+
   return (
     <View style={styles.wrapper}>
       <LinearGradient
@@ -40,8 +210,16 @@ export default function LoginScreen({navigation}) {
               placeholder="أدخل رقم هاتفك"
               placeholderTextColor="#888"
               keyboardType="phone-pad"
-              style={styles.input}
+              value={phoneNumber}
+              onChangeText={handlePhoneChange}
+              style={[
+                styles.input,
+                errors.phoneNumber ? styles.inputError : null,
+              ]}
             />
+            {errors.phoneNumber ? (
+              <Text style={styles.errorText}>{errors.phoneNumber}</Text>
+            ) : null}
           </View>
 
           {/* Password */}
@@ -51,8 +229,13 @@ export default function LoginScreen({navigation}) {
               placeholder="••••••••"
               placeholderTextColor="#888"
               secureTextEntry
-              style={styles.input}
+              value={password}
+              onChangeText={handlePasswordChange}
+              style={[styles.input, errors.password ? styles.inputError : null]}
             />
+            {errors.password ? (
+              <Text style={styles.errorText}>{errors.password}</Text>
+            ) : null}
           </View>
 
           {/* Login button */}
@@ -63,8 +246,13 @@ export default function LoginScreen({navigation}) {
             style={styles.loginBtn}>
             <TouchableOpacity
               style={styles.btnWrapper}
-              onPress={() => navigation.navigate('BottomTabs')}>
-              <Text style={styles.loginText}>دخول 🚀</Text>
+              onPress={handleLogin}
+              disabled={loading}>
+              {loading ? (
+                <ActivityIndicator size="small" color="#fff" />
+              ) : (
+                <Text style={styles.loginText}>دخول 🚀</Text>
+              )}
             </TouchableOpacity>
           </LinearGradient>
 
@@ -151,7 +339,7 @@ const styles = StyleSheet.create({
 
   input: {
     width: '100%',
-    height: RFValue(40),
+    height: RFValue(45),
     backgroundColor: '#F7F9FC',
     borderRadius: RFValue(12),
     paddingHorizontal: RFValue(12),
@@ -214,6 +402,20 @@ const styles = StyleSheet.create({
     marginTop: RFValue(20),
     fontSize: RFValue(14),
     color: '#333',
+    ...FONTS.body5,
+  },
+
+  inputError: {
+    borderColor: '#FF4444',
+    borderWidth: 1.5,
+    backgroundColor: '#FFF5F5',
+  },
+
+  errorText: {
+    fontSize: RFValue(11),
+    color: '#FF4444',
+    marginTop: RFValue(4),
+    // textAlign: 'right',
     ...FONTS.body5,
   },
 });

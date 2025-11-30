@@ -1,97 +1,404 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# MRElfalah - تطبيق التعليم
 
-# Getting Started
+هذا مشروع React Native لتطبيق تعليمي مبني باستخدام أحدث التقنيات.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+## 📋 المحتويات
 
-## Step 1: Start Metro
+- [البدء السريع](#البدء-السريع)
+- [البنية التحتية للمشروع](#البنية-التحتية-للمشروع)
+- [التحديثات الأخيرة - ربط API](#التحديثات-الأخيرة---ربط-api)
+- [الملفات المحدثة](#الملفات-المحدثة)
+- [استخدام API](#استخدام-api)
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+---
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+## 🚀 البدء السريع
+
+### المتطلبات الأساسية
+
+تأكد من إكمال [إعداد البيئة](https://reactnative.dev/docs/set-up-your-environment) قبل المتابعة.
+
+### الخطوة 1: تشغيل Metro
+
+قم بتشغيل Metro (أداة بناء JavaScript لـ React Native):
 
 ```sh
-# Using npm
+# باستخدام npm
 npm start
 
-# OR using Yarn
+# أو باستخدام Yarn
 yarn start
 ```
 
-## Step 2: Build and run your app
+### الخطوة 2: بناء وتشغيل التطبيق
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
-
-### Android
+#### Android
 
 ```sh
-# Using npm
 npm run android
-
-# OR using Yarn
+# أو
 yarn android
 ```
 
-### iOS
+#### iOS
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
-
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
+قبل أول تشغيل، قم بتثبيت CocoaPods dependencies:
 
 ```sh
 bundle install
-```
-
-Then, and every time you update your native dependencies, run:
-
-```sh
 bundle exec pod install
 ```
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+ثم:
 
 ```sh
-# Using npm
 npm run ios
-
-# OR using Yarn
+# أو
 yarn ios
 ```
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+---
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+## 📁 البنية التحتية للمشروع
 
-## Step 3: Modify your app
+```
+src/
+├── screens/
+│   ├── authScreens/
+│   │   ├── Login/          # شاشة تسجيل الدخول
+│   │   └── SignUp/         # شاشة التسجيل
+│   └── appScreens/
+│       └── Profile/        # شاشة الملف الشخصي
+├── Helpers/
+│   ├── ApiHelper.js        # مساعد API الرئيسي
+│   └── api.js
+├── Services/
+│   └── index.js            # خدمة المصادقة (Auth)
+├── utils/
+│   └── index.js            # دوال مساعدة (Toast)
+├── redux/
+│   └── reducers/
+│       └── UserReducer.js  # إدارة حالة المستخدم
+└── components/
+    └── CustomToast/        # مكون Toast المخصص
+```
 
-Now that you have successfully run the app, let's make changes!
+---
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+## 🔥 التحديثات الأخيرة - ربط API
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
+### نظرة عامة
 
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+تم ربط التطبيق بخادم API الخلفي بشكل كامل. تم تنفيذ نظام مصادقة متكامل مع إدارة حالة المستخدم وتخزين البيانات.
 
-## Congratulations! :tada:
+### ✅ ما تم إنجازه
 
-You've successfully run and modified your React Native App. :partying_face:
+#### 1. **إنشاء البنية التحتية للـ API** 🔧
 
-### Now what?
+##### أ. ملف `src/utils/index.js` (جديد)
+- إنشاء نظام Toast موحد لإظهار الرسائل
+- دعم أنواع مختلفة: `success`, `error`, `info`
+- إعدادات توقيت مناسبة لكل نوع
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
+```javascript
+utils.toastAlert('success', 'تم تسجيل الدخول بنجاح!');
+utils.toastAlert('error', 'حدث خطأ');
+```
 
-# Troubleshooting
+##### ب. ملف `src/Services/index.js` (جديد)
+- خدمة Auth لإدارة تسجيل الخروج
+- تنظيف AsyncStorage تلقائياً
+- حذف جميع مفاتيح المصادقة
 
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
+```javascript
+await Auth.logout(); // تنظيف كامل للبيانات
+```
 
-# Learn More
+##### ج. تحديث `src/Helpers/ApiHelper.js`
+- دعم صيغ متعددة للبيانات (JSON, form-urlencoded)
+- معالجة أخطاء شاملة
+- إدارة Session expiry تلقائياً
+- إرجاع responses موحدة
 
-To learn more about React Native, take a look at the following resources:
+**الميزات الجديدة:**
+- معامل `contentType` قابل للتخصيص
+- معالجة تلقائية للأخطاء 401/422
+- تنظيف تلقائي عند انتهاء الجلسة
 
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+#### 2. **شاشة تسجيل الدخول (Login)** 🔐
+
+##### الملف: `src/screens/authScreens/Login/index.js`
+
+**الميزات المضافة:**
+
+1. **ربط API**
+   - Endpoint: `POST /auth/new_login.php`
+   - إرسال البيانات بصيغة JSON
+   - معالجة الاستجابات والأخطاء
+
+2. **البيانات المرسلة:**
+```json
+{
+  "email": "01212745939",
+  "pass": "1231"
+}
+```
+
+3. **البيانات المستلمة:**
+```json
+{
+  "status": "success",
+  "message": {
+    "student_id": "506",
+    "student_email": "01212745939",
+    "token_value": "NbnnFdm5HTQi9ZgrDV9m",
+    "student_name": "Mohammed Reda",
+    "university_id": "1",
+    "grade_id": "1",
+    ...
+  }
+}
+```
+
+4. **الوظائف:**
+   - ✅ التحقق من صحة البيانات (رقم الهاتف وكلمة المرور)
+   - ✅ حالة تحميل (Loading state) مع ActivityIndicator
+   - ✅ حفظ بيانات المستخدم في Redux
+   - ✅ حفظ التوكن (`token_value`) في Redux
+   - ✅ عرض Toast للنجاح/الخطأ
+   - ✅ التنقل التلقائي إلى BottomTabs بعد النجاح
+
+5. **تحسينات UX:**
+   - تعطيل الزر أثناء التحميل
+   - رسائل خطأ واضحة
+   - تنظيف رقم الهاتف تلقائياً من المسافات والرموز
+
+#### 3. **شاشة الملف الشخصي (Profile) - تسجيل الخروج** 🚪
+
+##### الملف: `src/screens/appScreens/Profile/index.js`
+
+**الميزات المضافة:**
+
+1. **ربط API**
+   - Endpoint: `POST /auth/logout.php`
+   - إرسال `student_id` مع الطلب
+
+2. **البيانات المرسلة:**
+```json
+{
+  "student_id": "506"
+}
+```
+
+3. **الوظائف:**
+   - ✅ حالة تحميل أثناء تسجيل الخروج
+   - ✅ تنظيف AsyncStorage تلقائياً
+   - ✅ تنظيف Redux state (userData, token, login)
+   - ✅ عرض Toast للنجاح/الخطأ
+   - ✅ تسجيل خروج محلي حتى لو فشل الـ API
+   - ✅ التنقل التلقائي إلى شاشة Login
+
+4. **ميزة الأمان:**
+   - حتى لو فشل الاتصال بالخادم، يتم تسجيل الخروج محلياً
+   - ضمان عدم بقاء بيانات حساسة على الجهاز
+
+---
+
+## 📝 الملفات المحدثة
+
+### ملفات جديدة:
+
+1. **`src/utils/index.js`**
+   - نظام Toast موحد
+
+2. **`src/Services/index.js`**
+   - خدمة Auth لتسجيل الخروج
+
+### ملفات محدثة:
+
+1. **`src/Helpers/ApiHelper.js`**
+   - إضافة دعم `contentType` القابل للتخصيص
+   - تحسين معالجة الأخطاء
+   - إضافة headers `Content-Type`
+
+2. **`src/screens/authScreens/Login/index.js`**
+   - ربط كامل بـ API
+   - إضافة حالة التحميل
+   - إضافة Toast notifications
+   - حفظ بيانات المستخدم في Redux
+
+3. **`src/screens/appScreens/Profile/index.js`**
+   - ربط تسجيل الخروج بـ API
+   - إضافة حالة التحميل
+   - تحسين UX
+
+---
+
+## 🔌 استخدام API
+
+### 1. استخدام `fetchData` (من ApiHelper)
+
+```javascript
+import {fetchData} from '../../../Helpers/ApiHelper';
+
+// مثال: POST request بصيغة JSON
+const response = await fetchData('POST', '/auth/new_login.php', {
+  email: '01212745939',
+  pass: '1231',
+});
+
+// مثال: POST request بصيغة form-urlencoded
+const formData = `email=${email}&pass=${password}`;
+const response = await fetchData(
+  'POST',
+  '/auth/logout.php',
+  formData,
+  'application/x-www-form-urlencoded'
+);
+```
+
+**معاملات `fetchData`:**
+- `method`: طريقة HTTP ('GET', 'POST', 'PUT', 'DELETE')
+- `path`: مسار الـ endpoint (مثل '/auth/new_login.php')
+- `data`: البيانات المرسلة (object أو string)
+- `contentType`: نوع المحتوى (افتراضي: 'application/json')
+
+**الاستجابة:**
+```javascript
+{
+  status: 'success' | 'error',
+  message: string | object,
+  data: object | null
+}
+```
+
+### 2. استخدام Toast
+
+```javascript
+import Toast from 'react-native-toast-message';
+
+// رسالة نجاح
+Toast.show({
+  type: 'success',
+  text1: 'تم بنجاح!',
+  text2: 'الرسالة الثانوية',
+  position: 'top',
+  visibilityTime: 2000,
+});
+
+// رسالة خطأ
+Toast.show({
+  type: 'error',
+  text1: 'حدث خطأ!',
+  text2: 'تفاصيل الخطأ',
+  position: 'top',
+  visibilityTime: 3000,
+});
+```
+
+أو استخدام الدالة المساعدة:
+
+```javascript
+import utils from '../../../utils';
+
+utils.toastAlert('success', 'تم بنجاح!', 'الرسالة الثانوية');
+utils.toastAlert('error', 'حدث خطأ!');
+```
+
+### 3. استخدام Redux Actions
+
+```javascript
+import {useDispatch} from 'react-redux';
+import {
+  setUser,
+  setToken,
+  modifyIsLogin,
+  removeUser,
+} from '../../../redux/reducers/UserReducer';
+
+// حفظ بيانات المستخدم
+dispatch(setUser(userData));
+
+// حفظ التوكن
+dispatch(setToken(tokenValue));
+
+// تحديث حالة تسجيل الدخول
+dispatch(modifyIsLogin(true));
+
+// حذف بيانات المستخدم
+dispatch(removeUser());
+```
+
+---
+
+## 🔒 الأمان
+
+### تسجيل الخروج الآمن
+
+- تنظيف تلقائي لـ AsyncStorage
+- تنظيف Redux state بالكامل
+- ضمان عدم بقاء بيانات حساسة
+- تسجيل خروج محلي حتى عند فشل الـ API
+
+### إدارة الجلسات
+
+- تتبع تلقائي لانتهاء الجلسة (401/422)
+- تسجيل خروج تلقائي عند انتهاء الجلسة
+- تنظيف شامل للبيانات
+
+---
+
+## 🎨 المكونات المخصصة
+
+### CustomToast
+
+Toast مخصص بألوان متدرجة ومتعددة الأنواع:
+- **Success**: ألوان بنفسجية
+- **Error**: ألوان حمراء
+- **Info**: ألوان زرقاء
+
+المكون موجود في: `src/components/CustomToast/index.js`
+
+---
+
+## 🐛 استكشاف الأخطاء
+
+### مشاكل شائعة:
+
+1. **خطأ في استيراد utils**
+   - تأكد من وجود `src/utils/index.js`
+
+2. **خطأ في استيراد Auth**
+   - تأكد من وجود `src/Services/index.js`
+
+3. **عدم ظهور Toast**
+   - تأكد من وجود `<Toast />` في `App.tsx`
+
+4. **فشل الاتصال بالـ API**
+   - تحقق من `BASE_URL` في `.env.json`
+   - تحقق من صحة endpoint
+
+---
+
+## 📚 المصادر
+
+- [React Native Documentation](https://reactnative.dev)
+- [Redux Toolkit](https://redux-toolkit.js.org)
+- [React Navigation](https://reactnavigation.org)
+- [Toast Message](https://github.com/calintamas/react-native-toast-message)
+
+---
+
+## 📄 الترخيص
+
+هذا المشروع مملوك لفريق التطوير.
+
+---
+
+## 👥 المساهمون
+
+- فريق تطوير MRElfalah
+
+---
+
+**آخر تحديث**: ديسمبر 2024

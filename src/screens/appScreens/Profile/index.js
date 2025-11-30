@@ -7,34 +7,279 @@ import {
   TextInput,
   Image,
   ScrollView,
+  ActivityIndicator,
 } from 'react-native';
+import {useDispatch, useSelector} from 'react-redux';
+import {useNavigation, CommonActions} from '@react-navigation/native';
 import {RFValue} from 'react-native-responsive-fontsize';
 import LinearGradient from 'react-native-linear-gradient';
-import {ScreensContainer, GradientText} from '../../../components';
+import Toast from 'react-native-toast-message';
 import {COLORS, FONTS, icons} from '../../../constants';
+import {
+  modifyIsLogin,
+  removeUser,
+  setToken,
+  setUser as setUserData,
+} from '../../../redux/reducers/UserReducer';
+import {fetchData} from '../../../Helpers/ApiHelper';
+import Auth from '../../../Services';
 
 export default function ProfileScreen() {
+  const dispatch = useDispatch();
+  const navigation = useNavigation();
   const [editMode, setEditMode] = useState(false);
+  const [logoutLoading, setLogoutLoading] = useState(false);
+  const [saveLoading, setSaveLoading] = useState(false);
+
+  const userData = useSelector(state => state.UserReducer.userData);
+
+  const token = useSelector(state => state.UserReducer.token);
 
   const [user, setUser] = useState({
-    name: 'احمد السعيد راشد',
-    phone: '01212745939',
-    email: 'ahmed@example.com',
+    name: userData?.student_name || 'اسم الطالب',
+    phone: userData?.phone || userData?.student_email || '01000000000',
+    email: userData?.student_email || 'mail@example.com',
   });
 
-  const [temp, setTemp] = useState(user);
+  const [temp, setTemp] = useState({
+    name: user.name,
+    phone: user.phone,
+    password: '',
+  });
 
-  const save = () => {
-    setUser(temp);
+  const [errors, setErrors] = useState({
+    name: '',
+    phone: '',
+    password: '',
+  });
+
+  const handleEditPress = () => {
+    setTemp({
+      name: user.name,
+      phone: user.phone,
+      password: '',
+    });
+    setErrors({
+      name: '',
+      phone: '',
+      password: '',
+    });
+    setEditMode(true);
+  };
+
+  const validateForm = () => {
+    const newErrors = {
+      name: '',
+      phone: '',
+      password: '',
+    };
+
+    if (!temp.name || temp.name.trim() === '') {
+      newErrors.name = 'الاسم مطلوب';
+    }
+
+    if (!temp.phone || temp.phone.trim() === '') {
+      newErrors.phone = 'رقم الهاتف مطلوب';
+    } else if (!/^[0-9]+$/.test(temp.phone.trim())) {
+      newErrors.phone = 'رقم الهاتف يجب أن يحتوي على أرقام فقط';
+    } else if (temp.phone.trim().length < 10) {
+      newErrors.phone = 'رقم الهاتف يجب أن يكون 10 أرقام على الأقل';
+    }
+
+    if (!temp.password || temp.password.trim() === '') {
+      newErrors.password = 'كلمة المرور الجديدة مطلوبة';
+    } else if (temp.password.length < 4) {
+      newErrors.password = 'كلمة المرور يجب أن تكون 4 أحرف على الأقل';
+    }
+
+    setErrors(newErrors);
+    return !newErrors.name && !newErrors.phone && !newErrors.password;
+  };
+
+  const save = async () => {
+    if (!validateForm()) {
+      return;
+    }
+
+    setSaveLoading(true);
+    try {
+      const response = await fetchData('POST', '/auth/profile-update.php', {
+        student_id: userData?.student_id,
+        student_name: temp.name.trim(),
+        phone: temp.phone.trim(),
+        pass: temp.password,
+        token_value: token,
+        mobile: true,
+      });
+
+      console.log('Profile Update Response:', response);
+
+      if (response && response.status === 'success') {
+        const updatedUserData = {
+          ...userData,
+          student_name: temp.name.trim(),
+          phone: temp.phone.trim(),
+        };
+
+        dispatch(setUserData(updatedUserData));
+
+        setUser({
+          ...user,
+          name: temp.name.trim(),
+          phone: temp.phone.trim(),
+        });
+        setEditMode(false);
+        setErrors({
+          name: '',
+          phone: '',
+          password: '',
+        });
+        setTemp({
+          name: temp.name.trim(),
+          phone: temp.phone.trim(),
+          password: '',
+        });
+
+        Toast.show({
+          type: 'success',
+          text1: 'تم الحفظ بنجاح',
+          text2: response?.message || 'تم تحديث بياناتك بنجاح',
+          position: 'top',
+          visibilityTime: 2000,
+        });
+      } else {
+        Toast.show({
+          type: 'error',
+          text1: 'فشل التحديث',
+          text2: response?.message || 'حدث خطأ أثناء تحديث البيانات',
+          position: 'top',
+          visibilityTime: 3000,
+        });
+      }
+    } catch (error) {
+      console.log('Profile Update Error:', error);
+      Toast.show({
+        type: 'error',
+        text1: 'حدث خطأ',
+        text2: 'فشل الاتصال بالخادم',
+        position: 'top',
+        visibilityTime: 3000,
+      });
+    } finally {
+      setSaveLoading(false);
+    }
+  };
+
+  const handleCancel = () => {
     setEditMode(false);
+    setErrors({
+      name: '',
+      phone: '',
+      password: '',
+    });
+    setTemp({
+      name: user.name,
+      phone: user.phone,
+      password: '',
+    });
+  };
+
+  const handleLogout = async () => {
+    setLogoutLoading(true);
+    try {
+      const response = await fetchData('POST', '/auth/student_logout.php', {
+        student_id: userData?.student_id,
+        token_value: token,
+        mobile: true,
+      });
+
+      console.log('Logout Response:', response);
+
+      if (response && response.status === 'success') {
+        await Auth.logout();
+        dispatch(modifyIsLogin(false));
+        dispatch(removeUser());
+        dispatch(setToken(''));
+
+        Toast.show({
+          type: 'success',
+          text1: 'تم تسجيل الخروج بنجاح',
+          text2: 'إلى اللقاء!',
+          position: 'top',
+          visibilityTime: 2000,
+        });
+
+        setTimeout(() => {
+          const appStackNavigation = navigation.getParent();
+          if (appStackNavigation) {
+            appStackNavigation.dispatch(
+              CommonActions.reset({
+                index: 0,
+                routes: [{name: 'AuthStack'}],
+              }),
+            );
+          }
+        }, 500);
+      } else {
+        await Auth.logout();
+        dispatch(modifyIsLogin(false));
+        dispatch(removeUser());
+        dispatch(setToken(''));
+
+        Toast.show({
+          type: 'error',
+          text1: 'فشل تسجيل الخروج من الخادم',
+          text2: 'تم تسجيل الخروج محلياً',
+          position: 'top',
+          visibilityTime: 3000,
+        });
+
+        setTimeout(() => {
+          const appStackNavigation = navigation.getParent();
+          if (appStackNavigation) {
+            appStackNavigation.dispatch(
+              CommonActions.reset({
+                index: 0,
+                routes: [{name: 'AuthStack'}],
+              }),
+            );
+          }
+        }, 1000);
+        setLogoutLoading(false);
+      }
+    } catch (error) {
+      await Auth.logout();
+      dispatch(modifyIsLogin(false));
+      dispatch(removeUser());
+      dispatch(setToken(''));
+
+      Toast.show({
+        type: 'error',
+        text1: 'حدث خطأ',
+        text2: 'تم تسجيل الخروج محلياً',
+        position: 'top',
+        visibilityTime: 3000,
+      });
+
+      setTimeout(() => {
+        const appStackNavigation = navigation.getParent();
+        if (appStackNavigation) {
+          appStackNavigation.dispatch(
+            CommonActions.reset({
+              index: 0,
+              routes: [{name: 'AuthStack'}],
+            }),
+          );
+        }
+      }, 1000);
+      setLogoutLoading(false);
+    }
   };
 
   const firstName = user.name.split(' ')[0];
 
   return (
-    // <ScreensContainer>
     <View style={styles.root}>
-      {/* Header */}
       <LinearGradient
         colors={[COLORS.primary, COLORS.secondary]}
         start={{x: 0, y: 0}}
@@ -45,7 +290,6 @@ export default function ProfileScreen() {
         <Text style={styles.subText}>استمر في رحلتك التعليمية الرائعة! 🚀</Text>
       </LinearGradient>
 
-      {/* Avatar */}
       <LinearGradient
         colors={['#5C6BC0', '#3F51B5']}
         style={styles.avatarContainer}>
@@ -62,43 +306,84 @@ export default function ProfileScreen() {
             {!editMode ? (
               <Text style={styles.value}>{user.name}</Text>
             ) : (
-              <TextInput
-                style={styles.input}
-                value={temp.name}
-                onChangeText={t => setTemp({...temp, name: t})}
-              />
+              <>
+                <TextInput
+                  style={[styles.input, errors.name && styles.inputError]}
+                  value={temp.name}
+                  onChangeText={t => {
+                    setTemp({...temp, name: t});
+                    if (errors.name) {
+                      setErrors({...errors, name: ''});
+                    }
+                  }}
+                  placeholder="أدخل الاسم"
+                />
+                {errors.name ? (
+                  <Text style={styles.errorText}>{errors.name}</Text>
+                ) : null}
+              </>
             )}
           </View>
 
           <View style={styles.separator} />
 
-          {/* Phone */}
           <View style={styles.row}>
             <Text style={styles.label}>رقم الهاتف</Text>
 
             {!editMode ? (
               <Text style={styles.value}>{user.phone}</Text>
             ) : (
-              <TextInput
-                style={styles.input}
-                value={temp.phone}
-                onChangeText={t => setTemp({...temp, phone: t})}
-                keyboardType="phone-pad"
-              />
+              <>
+                <TextInput
+                  style={[styles.input, errors.phone && styles.inputError]}
+                  value={temp.phone}
+                  onChangeText={t => {
+                    setTemp({...temp, phone: t});
+                    if (errors.phone) {
+                      setErrors({...errors, phone: ''});
+                    }
+                  }}
+                  keyboardType="phone-pad"
+                  placeholder="أدخل رقم الهاتف"
+                />
+                {errors.phone ? (
+                  <Text style={styles.errorText}>{errors.phone}</Text>
+                ) : null}
+              </>
             )}
           </View>
 
-          {/* <View style={styles.separator} /> */}
+          {editMode && (
+            <>
+              <View style={styles.separator} />
+              <View style={styles.row}>
+                <Text style={styles.label}>كلمة المرور الجديدة</Text>
+                <TextInput
+                  style={[styles.input, errors.password && styles.inputError]}
+                  value={temp.password}
+                  onChangeText={t => {
+                    setTemp({...temp, password: t});
+                    if (errors.password) {
+                      setErrors({...errors, password: ''});
+                    }
+                  }}
+                  placeholder="أدخل كلمة المرور الجديدة"
+                  secureTextEntry={true}
+                />
+                {errors.password ? (
+                  <Text style={styles.errorText}>{errors.password}</Text>
+                ) : null}
+              </View>
+            </>
+          )}
         </View>
 
-        {/* ==== Buttons Row ==== */}
         <View style={styles.buttonsRow}>
           {!editMode ? (
             <>
-              {/* Edit */}
               <TouchableOpacity
                 style={styles.halfBtn}
-                onPress={() => setEditMode(true)}>
+                onPress={handleEditPress}>
                 <LinearGradient
                   colors={['#3F51B5', '#5C6BC0']}
                   style={styles.actionGradient}>
@@ -108,31 +393,45 @@ export default function ProfileScreen() {
                 </LinearGradient>
               </TouchableOpacity>
 
-              {/* Logout */}
-              <TouchableOpacity style={styles.halfLogoutBtn}>
+              <TouchableOpacity
+                style={styles.halfLogoutBtn}
+                onPress={handleLogout}
+                disabled={logoutLoading}>
                 <View style={styles.btnInner}>
-                  <Text style={styles.logoutText}>تسجيل خروج</Text>
-                  <Image source={icons.logout} style={styles.btnIconRed} />
+                  {logoutLoading ? (
+                    <ActivityIndicator size="small" color="#D32F2F" />
+                  ) : (
+                    <>
+                      <Text style={styles.logoutText}>تسجيل خروج</Text>
+                      <Image source={icons.logout} style={styles.btnIconRed} />
+                    </>
+                  )}
                 </View>
               </TouchableOpacity>
             </>
           ) : (
             <>
-              {/* Save */}
-              <TouchableOpacity style={styles.halfBtn} onPress={save}>
+              <TouchableOpacity
+                style={styles.halfBtn}
+                onPress={save}
+                disabled={saveLoading}>
                 <LinearGradient
                   colors={['#00BFA5', '#00796B']}
                   style={styles.actionGradient}>
                   <View style={styles.btnInner}>
-                    <Text style={styles.actionText}>حفظ</Text>
+                    {saveLoading ? (
+                      <ActivityIndicator size="small" color="#fff" />
+                    ) : (
+                      <Text style={styles.actionText}>حفظ</Text>
+                    )}
                   </View>
                 </LinearGradient>
               </TouchableOpacity>
 
-              {/* Cancel */}
               <TouchableOpacity
                 style={styles.halfLogoutBtn}
-                onPress={() => setEditMode(false)}>
+                onPress={handleCancel}
+                disabled={saveLoading}>
                 <View style={styles.btnInner}>
                   <Text style={styles.logoutText}>إلغاء</Text>
                 </View>
@@ -142,7 +441,6 @@ export default function ProfileScreen() {
         </View>
       </ScrollView>
     </View>
-    // </ScreensContainer>
   );
 }
 
@@ -177,7 +475,6 @@ const styles = StyleSheet.create({
     ...FONTS.body4,
   },
 
-  /* ===== Avatar ===== */
   avatarContainer: {
     alignSelf: 'center',
     paddingHorizontal: RFValue(22),
@@ -193,18 +490,15 @@ const styles = StyleSheet.create({
 
   avatarLetter: {
     fontSize: RFValue(22),
-    // fontWeight: '700',
     color: '#fff',
     ...FONTS.body2,
   },
 
-  /* ===== Scroll Area ===== */
   scrollArea: {
     paddingBottom: RFValue(80),
     paddingTop: RFValue(20),
   },
 
-  /* ===== Card ===== */
   card: {
     marginHorizontal: RFValue(20),
     backgroundColor: '#fff',
@@ -238,6 +532,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: RFValue(12),
     borderRadius: RFValue(10),
     fontSize: RFValue(16),
+    ...FONTS.body4,
+    textAlign: 'right',
+    // direction: 'ltr',
+  },
+
+  inputError: {
+    borderColor: '#D32F2F',
+    borderWidth: 1,
+  },
+
+  errorText: {
+    fontSize: RFValue(12),
+    color: '#D32F2F',
+    marginTop: RFValue(5),
+    ...FONTS.body4,
   },
 
   separator: {
@@ -246,7 +555,6 @@ const styles = StyleSheet.create({
     marginBottom: RFValue(18),
   },
 
-  /* ===== Buttons ===== */
   buttonsRow: {
     flexDirection: 'row-reverse',
     justifyContent: 'space-between',
@@ -284,7 +592,6 @@ const styles = StyleSheet.create({
   actionText: {
     color: '#fff',
     fontSize: RFValue(14),
-    // fontWeight: '700',
     ...FONTS.body4,
   },
 
