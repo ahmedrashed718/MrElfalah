@@ -5,9 +5,20 @@ import {RFValue} from 'react-native-responsive-fontsize';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import * as Animatable from 'react-native-animatable';
 import {COLORS, FONTS} from '../../../../constants';
+import images from '../../../../constants/images';
 
 export default function QuestionCard({item, index, gradient, number, onPress}) {
   const cardRef = useRef(null);
+
+  if (!item) {
+    return null;
+  }
+
+  const safeGradient = gradient || ['#4FACFE', '#00F2FE'];
+
+  const imageUri = item.course_photo_url || images.flahLogo || '';
+  const title = item.course_name || 'بدون عنوان';
+  const subtitle = item.course_content || '';
 
   const handlePress = () => {
     // Pulse animation
@@ -29,13 +40,18 @@ export default function QuestionCard({item, index, gradient, number, onPress}) {
         <View style={styles.card}>
           {/* Header Image Section */}
           <View style={styles.imageContainer}>
-            <Image
-              source={{uri: item.image}}
-              style={styles.cardImage}
-              resizeMode="cover"
-            />
+            {imageUri ? (
+              <Image
+                source={{uri: imageUri}}
+                style={styles.cardImage}
+                resizeMode="cover"
+              />
+            ) : (
+              <View style={[styles.cardImage, {backgroundColor: '#E0E0E0'}]} />
+            )}
             {/* Number Badge */}
-            <View style={[styles.numberBadge, {backgroundColor: gradient[0]}]}>
+            <View
+              style={[styles.numberBadge, {backgroundColor: safeGradient[0]}]}>
               <Text style={styles.numberText}>{number}</Text>
             </View>
           </View>
@@ -44,15 +60,17 @@ export default function QuestionCard({item, index, gradient, number, onPress}) {
           <View style={styles.cardContent}>
             {/* Main Title */}
             <Text style={styles.cardTitle} numberOfLines={2}>
-              {item.title}
+              {title}
             </Text>
 
             {/* Subtitle */}
-            <View style={styles.subtitleContainer}>
-              <Text style={styles.subtitleText} numberOfLines={2}>
-                {item.subtitle}
-              </Text>
-            </View>
+            {subtitle ? (
+              <View style={styles.subtitleContainer}>
+                <Text style={styles.subtitleText} numberOfLines={2}>
+                  {subtitle}
+                </Text>
+              </View>
+            ) : null}
 
             {/* Button */}
             <TouchableOpacity
@@ -60,7 +78,7 @@ export default function QuestionCard({item, index, gradient, number, onPress}) {
               activeOpacity={0.8}
               onPress={handlePress}>
               <LinearGradient
-                colors={gradient}
+                colors={safeGradient}
                 start={{x: 0, y: 0}}
                 end={{x: 1, y: 0}}
                 style={styles.buttonGradient}>

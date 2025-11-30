@@ -79,6 +79,7 @@ export default function ExamResults({route, navigation}) {
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
+  console.log('eeeeeeeeeeeeeeeeeeeeeeeeeeeee', selectedAnswers);
 
   const getSuccessMessage = () => {
     if (scorePercentage >= 80) {
@@ -108,7 +109,7 @@ export default function ExamResults({route, navigation}) {
           end={{x: 1, y: 1}}
           style={styles.header}>
           <View style={styles.headerContent}>
-            <Text style={styles.headerTitle}>اكتمل الاختبار!</Text>
+            <Text style={styles.headerTitle}>اكتمل الاختبار !</Text>
           </View>
 
           <View style={styles.headerSubContent}>

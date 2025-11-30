@@ -58,7 +58,9 @@ const ExamHeader = ({
           />
         </View>
         <Text style={styles.progressText}>
-          {Math.round(((currentQuestionIndex + 1) / totalQuestions) * 100)}%
+          {totalQuestions > 0
+            ? Math.round(((currentQuestionIndex + 1) / totalQuestions) * 100)
+            : 0}%
         </Text>
       </View>
     </LinearGradient>
