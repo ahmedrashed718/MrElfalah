@@ -1,29 +1,27 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useCallback} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {Provider, useDispatch} from 'react-redux';
-import {View, StyleSheet} from 'react-native';
 import Toast from 'react-native-toast-message';
 import AppStack from './src/navigation/AppStack';
 import {toastConfig} from './src/components/CustomToast';
-import {LottieLoader} from './src/components';
 import store from './src/redux';
 import Auth from './src/Services';
-import {setUser, setToken, modifyIsLogin} from './src/redux/reducers/UserReducer';
+import {
+  setUser,
+  setToken,
+  modifyIsLogin,
+} from './src/redux/reducers/UserReducer';
+import SplashScreen from './src/screens/SplashScreen';
 
-// مكون داخلي للتحقق من الجلسة
 const AppContent = () => {
   const dispatch = useDispatch();
-  const [isLoading, setIsLoading] = useState(true);
+  const [isSessionChecked, setIsSessionChecked] = useState(false);
+  const [isSplashComplete, setIsSplashComplete] = useState(false);
 
-  useEffect(() => {
-    checkSession();
-  }, []);
-
-  const checkSession = async () => {
+  const checkSession = useCallback(async () => {
     try {
       const session = await Auth.loadSession();
       if (session && session.isLoggedIn) {
-        // استعادة الجلسة في Redux
         dispatch(setUser(session.userData));
         if (session.token) {
           dispatch(setToken(session.token));
@@ -33,16 +31,21 @@ const AppContent = () => {
     } catch (error) {
       console.error('Error checking session:', error);
     } finally {
-      setIsLoading(false);
+      setIsSessionChecked(true);
     }
+  }, [dispatch]);
+
+  useEffect(() => {
+    checkSession();
+  }, [checkSession]);
+
+  const handleSplashComplete = () => {
+    setIsSplashComplete(true);
   };
 
-  if (isLoading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <LottieLoader message="جاري التحميل..." />
-      </View>
-    );
+  // Show splash until BOTH animation is complete AND session is checked
+  if (!isSplashComplete || !isSessionChecked) {
+    return <SplashScreen onAnimationComplete={handleSplashComplete} />;
   }
 
   return (
@@ -62,14 +65,5 @@ const App = () => {
     </Provider>
   );
 };
-
-const styles = StyleSheet.create({
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-  },
-});
 
 export default App;

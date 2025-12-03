@@ -26,14 +26,14 @@ export default function QuestionBank({navigation}) {
   const [questionBanks, setQuestionBanks] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // ا Redux
+  // Redux
   const userData = useSelector(state => state.UserReducer.userData);
   const token = useSelector(state => state.UserReducer.token);
 
   const fetchMyCourses = useCallback(async () => {
     try {
       setLoading(true);
-      if (!userData?.student_id && !userData?.id) {
+      if (!userData?.student_id) {
         Toast.show({
           type: 'error',
           text1: 'خطأ في البيانات',
@@ -56,12 +56,13 @@ export default function QuestionBank({navigation}) {
         setLoading(false);
         return;
       }
+      console.log('Fetching courses for user ID:', userData);
 
       const response = await fetchData(
         'POST',
         '/courses/select_my_courses.php',
         {
-          student_id: userData?.student_id || userData?.id,
+          student_id: userData?.student_id,
           token_value: token,
           mobile: true,
         },
@@ -108,8 +109,8 @@ export default function QuestionBank({navigation}) {
   const handleCardPress = item => {
     if (navigation && item) {
       navigation.navigate('QuestionStages', {
-        questionBankTitle: item.title || item.name || item.course_name || '',
-        questionBankId: item.id || item.course_id || '',
+        questionBankTitle: item.course_name || '',
+        questionBankId: item.course_id || '',
       });
     }
   };
@@ -119,7 +120,7 @@ export default function QuestionBank({navigation}) {
       return null;
     }
 
-    const itemId = item.id || item.course_id || index;
+    const itemId = item.course_id || index;
     const gradient = getRandomGradient(itemId);
     const number = index + 1;
 
@@ -145,9 +146,6 @@ export default function QuestionBank({navigation}) {
         <FlatList
           data={questionBanks}
           keyExtractor={(item, index) => {
-            if (item?.id) {
-              return `course-${item.id}-${index}`;
-            }
             if (item?.course_id) {
               return `course-${item.course_id}-${index}`;
             }

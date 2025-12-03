@@ -5,13 +5,10 @@ const {width, height} = Dimensions.get('window');
 
 export const IS_IOS = Platform.OS === 'ios';
 export const IS_IPHONE_X = isIphoneX();
-
 export const COLORS = {
   primary: '#F14D4D',
-
-  primary100: '#FFF4EF', // Added new color
+  primary100: '#FFF4EF',
   secondary: '#495ECD',
-
   black: '#000000',
   green: '#60c5a8',
   green2: '#00B112',
@@ -44,7 +41,7 @@ export const COLORS = {
   transparentBlack7: 'rgba(0, 0, 0, 0.7)',
   transparentGreen: 'rgba(0, 225, 0, 0.2)',
   transparentRed: 'rgba(255, 0, 0, 0.2)',
-  primaryAlpha: 'rgba(230, 83, 23, 0.85)', // Updated to match new primary color
+  primaryAlpha: 'rgba(230, 83, 23, 0.85)',
   greenAlpha: 'rgba(96, 197, 168, 0.15)',
   redAlpha: 'rgba(255, 84, 84, 0.15)',
   purpleAlpha: 'rgba(146, 6, 228, 0.15)',

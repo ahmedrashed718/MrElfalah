@@ -1,10 +1,5 @@
 import React, {useState, useEffect, useCallback} from 'react';
-import {
-  View,
-  StyleSheet,
-  FlatList,
-  Text,
-} from 'react-native';
+import {View, StyleSheet, FlatList, Text} from 'react-native';
 import {RFValue} from 'react-native-responsive-fontsize';
 import LinearGradient from 'react-native-linear-gradient';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -35,14 +30,12 @@ export default function QuestionStages({route, navigation}) {
   const [questionStages, setQuestionStages] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // استخدام course_id من params أو questionBankId
   const courseId = course_id || questionBankId;
 
   const fetchStages = useCallback(async () => {
     try {
       setLoading(true);
 
-      // التحقق من وجود course_id
       if (!courseId) {
         Toast.show({
           type: 'error',
@@ -55,7 +48,6 @@ export default function QuestionStages({route, navigation}) {
         return;
       }
 
-      // إرسال الطلب POST مع course_id
       const response = await fetchData(
         'POST',
         '/courses/select_course_unit.php',
@@ -65,8 +57,7 @@ export default function QuestionStages({route, navigation}) {
       );
 
       if (response && response.status === 'success') {
-        // البيانات قد تأتي في response.data أو response.message
-        const stagesData = response.data || response.message || [];
+        const stagesData = response.message || [];
         setQuestionStages(Array.isArray(stagesData) ? stagesData : []);
       } else {
         Toast.show({
@@ -98,7 +89,6 @@ export default function QuestionStages({route, navigation}) {
   }, [fetchStages]);
 
   const getRandomGradient = itemId => {
-    // إضافة فحص للتأكد من وجود itemId
     const safeId = itemId || Math.floor(Math.random() * 1000);
     const index = safeId % colorPalette.length;
     return colorPalette[index];
@@ -123,7 +113,6 @@ export default function QuestionStages({route, navigation}) {
       return null;
     }
 
-    // استخدام id أو unit_id أو أي معرف آخر
     const itemId = item.id || item.unit_id || index;
     const gradient = getRandomGradient(itemId);
     const number = index + 1;
@@ -153,9 +142,6 @@ export default function QuestionStages({route, navigation}) {
         <FlatList
           data={questionStages}
           keyExtractor={(item, index) => {
-            if (item?.id) {
-              return `stage-${item.id}-${index}`;
-            }
             if (item?.unit_id) {
               return `stage-${item.unit_id}-${index}`;
             }
