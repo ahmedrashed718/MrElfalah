@@ -17,8 +17,9 @@ import RNFS from 'react-native-fs';
 import ReactNativeBlobUtil from 'react-native-blob-util';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {RFValue} from 'react-native-responsive-fontsize';
-import {COLORS, FONTS} from '../../../../constants';
+import {COLORS, FONTS, lotties} from '../../../../constants';
 import LinearGradient from 'react-native-linear-gradient';
+import LottieView from 'lottie-react-native';
 
 // const {width: screenWidth, height: screenHeight} = Dimensions.get('window');
 
@@ -171,7 +172,12 @@ const PDFModal = ({visible, pdfUrl, title, onClose}) => {
           {loading && (
             <View style={styles.loadingContainer}>
               <View style={styles.loadingContent}>
-                <ActivityIndicator size="large" color={COLORS.primary} />
+                <LottieView
+                  source={lotties.loading}
+                  autoPlay
+                  loop
+                  style={styles.lottie}
+                />
                 <Text style={styles.loadingText}>جاري تحميل الملف...</Text>
                 <Text style={styles.loadingSubtext}>
                   يرجى الانتظار قليلاً
@@ -365,6 +371,10 @@ const styles = StyleSheet.create({
         elevation: 6,
       },
     }),
+  },
+  lottie: {
+    width: RFValue(120),
+    height: RFValue(120),
   },
   loadingText: {
     marginTop: RFValue(20),

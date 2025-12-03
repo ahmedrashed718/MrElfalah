@@ -1,10 +1,11 @@
 import React, {useEffect, useState} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {Provider, useDispatch} from 'react-redux';
-import {View, ActivityIndicator, StyleSheet} from 'react-native';
+import {View, StyleSheet} from 'react-native';
 import Toast from 'react-native-toast-message';
 import AppStack from './src/navigation/AppStack';
 import {toastConfig} from './src/components/CustomToast';
+import {LottieLoader} from './src/components';
 import store from './src/redux';
 import Auth from './src/Services';
 import {setUser, setToken, modifyIsLogin} from './src/redux/reducers/UserReducer';
@@ -39,7 +40,7 @@ const AppContent = () => {
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#495ECD" />
+        <LottieLoader message="جاري التحميل..." />
       </View>
     );
   }

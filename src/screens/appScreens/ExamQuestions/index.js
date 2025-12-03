@@ -3,12 +3,11 @@ import {
   View,
   StyleSheet,
   ScrollView,
-  ActivityIndicator,
   Text,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {RFValue} from 'react-native-responsive-fontsize';
-import {AppHeader} from '../../../components';
+import {AppHeader, LottieLoader} from '../../../components';
 import ArrangePuzzleGame from './components/ArrangePuzzleGame';
 import ExamHeader from './components/ExamHeader';
 import ExamTitleCard from './components/ExamTitleCard';
@@ -22,7 +21,7 @@ import Toast from 'react-native-toast-message';
 import {useSelector} from 'react-redux';
 
 export default function ExamQuestion({route, navigation}) {
-  const {examTitle, examId} = route.params || {};
+  const {examTitle, examId, unit_id, course_id} = route.params || {};
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState({});
   const [timeRemaining, setTimeRemaining] = useState(60 * 1);
@@ -41,6 +40,9 @@ export default function ExamQuestion({route, navigation}) {
   const selectedAnswersRef = useRef({});
   const questionsRef = useRef([]);
   const examTitleRef = useRef('');
+  const examIdRef = useRef(null);
+  const unitIdRef = useRef(null);
+  const courseIdRef = useRef(null);
   const navigationRef = useRef(null);
 
   const totalQuestions = questions.length;
@@ -52,6 +54,127 @@ export default function ExamQuestion({route, navigation}) {
       try {
         setLoading(true);
 
+        // إذا كان unit_id موجود (جاء من QuestionStages)، استخدم API مختلف
+        if (unit_id) {
+          // التحقق من وجود البيانات المطلوبة
+          if (!userData?.student_id && !userData?.id) {
+            Toast.show({
+              type: 'error',
+              text1: 'خطأ في البيانات',
+              text2: 'لم يتم العثور على معرف المستخدم',
+              position: 'top',
+              visibilityTime: 3000,
+            });
+            setQuestions([]);
+            setLoading(false);
+            return;
+          }
+
+          if (!token) {
+            Toast.show({
+              type: 'error',
+              text1: 'خطأ في المصادقة',
+              text2: 'لم يتم العثور على رمز المصادقة',
+              position: 'top',
+              visibilityTime: 3000,
+            });
+            setQuestions([]);
+            setLoading(false);
+            return;
+          }
+
+          // استدعاء API الجديد للأسئلة من QuestionStages مع payload كامل
+          const response = await fetchData(
+            'POST',
+            '/courses/select_questions.php',
+            {
+              student_id: userData?.student_id || userData?.id || '',
+              token_value: token || '',
+              unit_id: unit_id || '',
+              course_id: course_id || '',
+              mobile: true,
+            },
+          );
+
+          console.log(
+            'API Response for unit_id:',
+            '((((',
+            unit_id,
+            '))))))',
+            JSON.stringify(response, null, 2),
+          );
+
+          // معالجة مرنة للـ response - التحقق من جميع الاحتمالات
+          let questionsArray = [];
+
+          // الاحتمال 1: البيانات في response.data
+          if (response?.data) {
+            if (Array.isArray(response.data)) {
+              questionsArray = response.data;
+            } else if (Array.isArray(response.data.questions)) {
+              questionsArray = response.data.questions;
+            } else if (Array.isArray(response.data.data)) {
+              questionsArray = response.data.data;
+            }
+          }
+
+          // الاحتمال 2: البيانات في response.message
+          if (questionsArray.length === 0 && response?.message) {
+            if (Array.isArray(response.message)) {
+              questionsArray = response.message;
+            } else if (Array.isArray(response.message.questions)) {
+              questionsArray = response.message.questions;
+            } else if (Array.isArray(response.message.data)) {
+              questionsArray = response.message.data;
+            }
+          }
+
+          // الاحتمال 3: البيانات مباشرة في response (array)
+          if (questionsArray.length === 0 && Array.isArray(response)) {
+            questionsArray = response;
+          }
+
+          // الاحتمال 4: البيانات في response.questions
+          if (
+            questionsArray.length === 0 &&
+            Array.isArray(response?.questions)
+          ) {
+            questionsArray = response.questions;
+          }
+
+          console.log('Questions Array Length:', questionsArray.length);
+
+          // إذا وجدنا أسئلة، استخدمها بغض النظر عن status
+            if (questionsArray.length > 0) {
+              setQuestions(questionsArray);
+              // لا نستخدم timer للأسئلة من بنك الأسئلة
+              setTimeRemaining(null);
+            } else {
+            // فقط إذا لم تكن هناك بيانات و status !== 'success' نعرض خطأ
+            if (response && response.status && response.status !== 'success') {
+              Toast.show({
+                type: 'error',
+                text1: 'خطأ في تحميل الأسئلة',
+                text2: response?.message || 'حدث خطأ، يرجى المحاولة مرة أخرى',
+                position: 'top',
+                visibilityTime: 3000,
+              });
+            } else {
+              Toast.show({
+                type: 'info',
+                text1: 'لا توجد أسئلة',
+                text2: 'لا توجد أسئلة متاحة لهذه الوحدة',
+                position: 'top',
+                visibilityTime: 3000,
+              });
+            }
+            setQuestions([]);
+          }
+          setLoading(false);
+          return;
+        }
+
+        // إذا لم يكن unit_id موجود، استخدم API القديم للامتحانات
         // Check if examId is provided
         if (!examId) {
           Toast.show({
@@ -181,7 +304,7 @@ export default function ExamQuestion({route, navigation}) {
     };
 
     fetchExamQuestions();
-  }, [examId, userData, token]);
+  }, [examId, unit_id, course_id, userData, token]);
 
   // Keep refs updated
   useEffect(() => {
@@ -197,18 +320,31 @@ export default function ExamQuestion({route, navigation}) {
   }, [examTitle]);
 
   useEffect(() => {
+    examIdRef.current = examId;
+  }, [examId]);
+
+  useEffect(() => {
+    unitIdRef.current = unit_id;
+  }, [unit_id]);
+
+  useEffect(() => {
+    courseIdRef.current = course_id;
+  }, [course_id]);
+
+  useEffect(() => {
     navigationRef.current = navigation;
   }, [navigation]);
 
-  // Timer
+  // Timer - فقط للامتحانات وليس لبنك الأسئلة
   useEffect(() => {
-    if (loading || questions.length === 0) {
+    // إذا كان unit_id موجود (من بنك الأسئلة)، لا نستخدم timer
+    if (unit_id || loading || questions.length === 0) {
       return;
     }
 
     const timer = setInterval(() => {
       setTimeRemaining(prev => {
-        if (prev <= 0) {
+        if (prev <= 0 || prev === null) {
           clearInterval(timer);
           return 0;
         }
@@ -216,11 +352,17 @@ export default function ExamQuestion({route, navigation}) {
       });
     }, 1000);
     return () => clearInterval(timer);
-  }, [loading, questions.length]);
+  }, [loading, questions.length, unit_id]);
 
-  // Auto-finish exam when timer reaches 0
+  // Auto-finish exam when timer reaches 0 - فقط للامتحانات وليس لبنك الأسئلة
   useEffect(() => {
+    // إذا كان unit_id موجود (من بنك الأسئلة)، لا نستخدم auto-finish
+    if (unit_id) {
+      return;
+    }
+
     if (
+      timeRemaining !== null &&
       timeRemaining <= 0 &&
       !examFinishedRef.current &&
       navigationRef.current
@@ -234,10 +376,13 @@ export default function ExamQuestion({route, navigation}) {
           selectedAnswers: selectedAnswersRef.current,
           timeTaken,
           examTitle: examTitleRef.current || 'اختبار4',
+          examId: examIdRef.current,
+          unit_id: unitIdRef.current,
+          course_id: courseIdRef.current,
         });
       }, 0);
     }
-  }, [timeRemaining, startTime]);
+  }, [timeRemaining, startTime, unit_id]);
 
   // Progress bar
   useEffect(() => {
@@ -316,8 +461,11 @@ export default function ExamQuestion({route, navigation}) {
       selectedAnswers,
       timeTaken,
       examTitle: examTitle || 'اختبار4',
+      examId: examId,
+      unit_id: unit_id,
+      course_id: course_id,
     });
-  }, [startTime, navigation, questions, selectedAnswers, examTitle]);
+  }, [startTime, navigation, questions, selectedAnswers, examTitle, examId, unit_id, course_id]);
 
   const progressWidth = progressAnim.interpolate({
     inputRange: [0, 1],
@@ -329,9 +477,7 @@ export default function ExamQuestion({route, navigation}) {
     return (
       <View style={styles.container}>
         <AppHeader title="الامتحان" showBack={true} />
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#4FACFE" />
-        </View>
+        <LottieLoader message="جاري تحميل الأسئلة..." />
       </View>
     );
   }
@@ -367,6 +513,7 @@ export default function ExamQuestion({route, navigation}) {
             currentQuestionIndex={currentQuestionIndex}
             totalQuestions={totalQuestions}
             progressWidth={progressWidth}
+            showTimer={!unit_id} // إخفاء الـ timer إذا كان من بنك الأسئلة
           />
 
           {/* Title */}

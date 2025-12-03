@@ -15,7 +15,7 @@ import {FONTS} from '../../../constants';
 import {AppHeader} from '../../../components';
 const {width} = Dimensions.get('window');
 export default function ExamResults({route, navigation}) {
-  const {questions, selectedAnswers, timeTaken, examTitle} = route.params || {};
+  const {questions, selectedAnswers, timeTaken, examTitle, examId, unit_id, course_id} = route.params || {};
 
   // Calculate results
   const totalQuestions = questions?.length || 0;
@@ -406,8 +406,17 @@ export default function ExamResults({route, navigation}) {
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={() => {
-              if (examTitle) {
+              if (unit_id) {
+                // إذا كان من بنك الأسئلة
                 navigation.navigate('ExamQuestion', {
+                  examTitle: examTitle,
+                  unit_id: unit_id,
+                  course_id: course_id,
+                });
+              } else if (examId) {
+                // إذا كان من امتحان
+                navigation.navigate('ExamQuestion', {
+                  examId: examId,
                   examTitle: examTitle,
                 });
               } else {

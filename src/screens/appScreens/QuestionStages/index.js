@@ -1,12 +1,19 @@
-import React from 'react';
-import {View, StyleSheet, FlatList, Text} from 'react-native';
+import React, {useState, useEffect, useCallback} from 'react';
+import {
+  View,
+  StyleSheet,
+  FlatList,
+  Text,
+} from 'react-native';
 import {RFValue} from 'react-native-responsive-fontsize';
 import LinearGradient from 'react-native-linear-gradient';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import * as Animatable from 'react-native-animatable';
-import {AppHeader, ScreensContainer} from '../../../components';
+import {AppHeader, LottieLoader, EmptyState} from '../../../components';
 import {COLORS, FONTS} from '../../../constants';
 import StageCard from './components/StageCard';
+import {fetchData} from '../../../Helpers/ApiHelper';
+import Toast from 'react-native-toast-message';
 
 const colorPalette = [
   ['#FF9966', '#FF5E62'],
@@ -23,55 +30,102 @@ const colorPalette = [
   ['#4FACFE', '#00F2FE'],
 ];
 
-// Sample stages data
-const questionStages = [
-  {
-    id: 1,
-    title: 'المرحلة الأولى',
-    subtitle: 'مرحلة البداية والتعلم الأساسي',
-  },
-  {
-    id: 2,
-    title: 'المرحلة الثانية',
-    subtitle: 'مرحلة التطبيق والممارسة',
-  },
-  {
-    id: 3,
-    title: 'المرحلة الثالثة',
-    subtitle: 'مرحلة التحدي والتقدم',
-  },
-  {
-    id: 4,
-    title: 'المرحلة الرابعة',
-    subtitle: 'مرحلة الإتقان والتميز',
-  },
-  {
-    id: 5,
-    title: 'المرحلة الخامسة',
-    subtitle: 'مرحلة الإبداع والابتكار',
-  },
-];
-
 export default function QuestionStages({route, navigation}) {
-  const {questionBankTitle} = route.params || {};
+  const {questionBankTitle, questionBankId, course_id} = route.params || {};
+  const [questionStages, setQuestionStages] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // استخدام course_id من params أو questionBankId
+  const courseId = course_id || questionBankId;
+
+  const fetchStages = useCallback(async () => {
+    try {
+      setLoading(true);
+
+      // التحقق من وجود course_id
+      if (!courseId) {
+        Toast.show({
+          type: 'error',
+          text1: 'خطأ في البيانات',
+          text2: 'لم يتم العثور على معرف الدورة',
+          position: 'top',
+          visibilityTime: 3000,
+        });
+        setLoading(false);
+        return;
+      }
+
+      // إرسال الطلب POST مع course_id
+      const response = await fetchData(
+        'POST',
+        '/courses/select_course_unit.php',
+        {
+          course_id: courseId,
+        },
+      );
+
+      if (response && response.status === 'success') {
+        // البيانات قد تأتي في response.data أو response.message
+        const stagesData = response.data || response.message || [];
+        setQuestionStages(Array.isArray(stagesData) ? stagesData : []);
+      } else {
+        Toast.show({
+          type: 'error',
+          text1: 'خطأ في تحميل البيانات',
+          text2: response?.message || 'حدث خطأ، يرجى المحاولة مرة أخرى',
+          position: 'top',
+          visibilityTime: 3000,
+        });
+        setQuestionStages([]);
+      }
+    } catch (error) {
+      console.error('Error fetching stages:', error);
+      Toast.show({
+        type: 'error',
+        text1: 'خطأ في الاتصال',
+        text2: 'حدث خطأ، يرجى المحاولة مرة أخرى',
+        position: 'top',
+        visibilityTime: 3000,
+      });
+      setQuestionStages([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [courseId]);
+
+  useEffect(() => {
+    fetchStages();
+  }, [fetchStages]);
 
   const getRandomGradient = itemId => {
-    const index = itemId % colorPalette.length;
+    // إضافة فحص للتأكد من وجود itemId
+    const safeId = itemId || Math.floor(Math.random() * 1000);
+    const index = safeId % colorPalette.length;
     return colorPalette[index];
   };
 
   const handleCardPress = item => {
-    if (navigation) {
+    if (navigation && item) {
+      const unitId = item.unit_id || '';
       navigation.navigate('ExamQuestion', {
-        examTitle: item.title,
-        stageId: item.id,
+        examTitle: item.unit_name || '',
+        stageId: unitId,
+        unit_id: unitId,
+        course_id: courseId,
         questionBankTitle: questionBankTitle,
       });
     }
   };
 
   const renderCard = ({item, index}) => {
-    const gradient = getRandomGradient(item.id);
+    // إضافة فحص للتأكد من وجود item
+    if (!item) {
+      return null;
+    }
+
+    // استخدام id أو unit_id أو أي معرف آخر
+    const itemId = item.id || item.unit_id || index;
+    const gradient = getRandomGradient(itemId);
     const number = index + 1;
 
     return (
@@ -93,53 +147,68 @@ export default function QuestionStages({route, navigation}) {
         // reducedShadow={true}
       />
 
-      <FlatList
-        data={questionStages}
-        keyExtractor={item => item.id.toString()}
-        renderItem={renderCard}
-        numColumns={1}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.listContent}
-        ListHeaderComponent={
-          questionBankTitle ? (
-            <Animatable.View
-              animation="fadeInDown"
-              duration={600}
-              style={styles.titleCardWrapper}>
-              <View style={styles.titleCard}>
-                <LinearGradient
-                  colors={['#00C9A7', '#FF6B9D']}
-                  start={{x: 0, y: 0}}
-                  end={{x: 1, y: 0}}
-                  style={styles.titleCardGradient}>
-                  <View style={styles.titleCardContent}>
-                    <View style={styles.iconWrapper}>
+      {loading ? (
+        <LottieLoader message="جاري تحميل المراحل..." />
+      ) : (
+        <FlatList
+          data={questionStages}
+          keyExtractor={(item, index) => {
+            if (item?.id) {
+              return `stage-${item.id}-${index}`;
+            }
+            if (item?.unit_id) {
+              return `stage-${item.unit_id}-${index}`;
+            }
+            return `stage-${index}`;
+          }}
+          renderItem={renderCard}
+          numColumns={1}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.listContent}
+          ListHeaderComponent={
+            questionBankTitle ? (
+              <Animatable.View
+                animation="fadeInDown"
+                duration={600}
+                style={styles.titleCardWrapper}>
+                <View style={styles.titleCard}>
+                  <LinearGradient
+                    colors={['#00C9A7', '#FF6B9D']}
+                    start={{x: 0, y: 0}}
+                    end={{x: 1, y: 0}}
+                    style={styles.titleCardGradient}>
+                    <View style={styles.titleCardContent}>
+                      <View style={styles.iconWrapper}>
+                        <Ionicons
+                          name="library-outline"
+                          size={RFValue(28)}
+                          color={COLORS.white}
+                        />
+                      </View>
+                      <View style={styles.titleTextContainer}>
+                        <Text style={styles.titleLabel}>بنك الأسئلة</Text>
+                        <Text style={styles.titleText} numberOfLines={2}>
+                          {questionBankTitle}
+                        </Text>
+                      </View>
                       <Ionicons
-                        name="library-outline"
-                        size={RFValue(28)}
+                        name="book-outline"
+                        size={RFValue(24)}
                         color={COLORS.white}
+                        style={styles.rightIcon}
                       />
                     </View>
-                    <View style={styles.titleTextContainer}>
-                      <Text style={styles.titleLabel}>بنك الأسئلة</Text>
-                      <Text style={styles.titleText} numberOfLines={2}>
-                        {questionBankTitle}
-                      </Text>
-                    </View>
-                    <Ionicons
-                      name="book-outline"
-                      size={RFValue(24)}
-                      color={COLORS.white}
-                      style={styles.rightIcon}
-                    />
-                  </View>
-                </LinearGradient>
-              </View>
-            </Animatable.View>
-          ) : null
-        }
-        ListFooterComponent={<View style={styles.footer} />}
-      />
+                  </LinearGradient>
+                </View>
+              </Animatable.View>
+            ) : null
+          }
+          ListFooterComponent={<View style={styles.footer} />}
+          ListEmptyComponent={
+            <EmptyState message="لا توجد مراحل متاحة حالياً" />
+          }
+        />
+      )}
     </>
   );
 }

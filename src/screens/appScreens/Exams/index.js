@@ -1,15 +1,12 @@
 import React, {useState, useEffect, useCallback} from 'react';
 import {
   View,
-  Text,
   StyleSheet,
   Dimensions,
   FlatList,
-  ActivityIndicator,
 } from 'react-native';
 import {RFValue} from 'react-native-responsive-fontsize';
-import {FONTS} from '../../../constants';
-import {AppHeader} from '../../../components';
+import {AppHeader, LottieLoader, EmptyState} from '../../../components';
 import {fetchData} from '../../../Helpers/ApiHelper';
 import Toast from 'react-native-toast-message';
 import {useSelector} from 'react-redux';
@@ -159,9 +156,7 @@ export default function ExamsScreen({navigation}) {
       <AppHeader title="الاختبارات" showBack={false} />
 
       {loading ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#4FACFE" />
-        </View>
+        <LottieLoader message="جاري تحميل الاختبارات..." />
       ) : (
         <FlatList
           data={exams}
@@ -179,11 +174,7 @@ export default function ExamsScreen({navigation}) {
           ]}
           key={numColumns} // Force re-render when columns change
           ListEmptyComponent={
-            <View style={styles.emptyContainer}>
-              <Text style={styles.emptyText}>
-                لا توجد اختبارات متاحة حالياً
-              </Text>
-            </View>
+            <EmptyState message="لا توجد اختبارات متاحة حالياً" />
           }
         />
       )}
@@ -204,25 +195,5 @@ const styles = StyleSheet.create({
 
   listContent: {
     flexGrow: 1,
-  },
-
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-
-  emptyContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: RFValue(50),
-  },
-
-  emptyText: {
-    fontSize: RFValue(16),
-    color: '#999',
-    textAlign: 'center',
-    ...FONTS.body4,
   },
 });

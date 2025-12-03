@@ -1,9 +1,8 @@
 import React, {useState, useEffect, useCallback} from 'react';
-import {View, StyleSheet, FlatList, ActivityIndicator} from 'react-native';
+import {View, StyleSheet, FlatList} from 'react-native';
 import {RFValue} from 'react-native-responsive-fontsize';
-import {AppHeader} from '../../../components';
+import {AppHeader, LottieLoader, EmptyState} from '../../../components';
 import CourseCard from './components/CourseCard';
-import * as Animatable from 'react-native-animatable';
 import {fetchData} from '../../../Helpers/ApiHelper';
 import Toast from 'react-native-toast-message';
 import {useSelector} from 'react-redux';
@@ -93,9 +92,7 @@ export default function CoursesScreen({navigation}) {
 
       {/* List */}
       {loading ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#4FACFE" />
-        </View>
+        <LottieLoader message="جاري تحميل المناهج..." />
       ) : (
         <FlatList
           data={courses}
@@ -117,11 +114,7 @@ export default function CoursesScreen({navigation}) {
           contentContainerStyle={{paddingBottom: RFValue(40)}}
           ListFooterComponent={<View style={{height: RFValue(50)}} />}
           ListEmptyComponent={
-            <View style={styles.emptyContainer}>
-              <Animatable.Text animation="fadeIn" style={styles.emptyText}>
-                لا توجد دورات متاحة حالياً
-              </Animatable.Text>
-            </View>
+            <EmptyState message="لا توجد مناهج متاحة حالياً" />
           }
         />
       )}
@@ -132,21 +125,5 @@ export default function CoursesScreen({navigation}) {
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: RFValue(50),
-  },
-  emptyText: {
-    fontSize: RFValue(16),
-    color: '#999',
-    textAlign: 'center',
   },
 });

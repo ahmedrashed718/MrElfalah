@@ -11,6 +11,7 @@ const ExamHeader = ({
   currentQuestionIndex,
   totalQuestions,
   progressWidth,
+  showTimer = true,
 }) => {
   const formatTime = seconds => {
     const mins = Math.floor(seconds / 60);
@@ -18,7 +19,7 @@ const ExamHeader = ({
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const isTimeWarning = timeRemaining < 30;
+  const isTimeWarning = showTimer && timeRemaining !== null && timeRemaining < 30;
 
   return (
     <LinearGradient
@@ -27,22 +28,26 @@ const ExamHeader = ({
       end={{x: 1, y: 1}}
       style={styles.header}>
       <View style={styles.headerContent}>
-        <View style={styles.timerSection}>
-          <View
-            style={[
-              styles.timerContainer,
-              isTimeWarning && styles.timerWarning,
-            ]}>
-            <Ionicons name="time-outline" size={RFValue(18)} color="#fff" />
-            <Text
+        {showTimer && timeRemaining !== null ? (
+          <View style={styles.timerSection}>
+            <View
               style={[
-                styles.timerText,
-                isTimeWarning && styles.timerWarningText,
+                styles.timerContainer,
+                isTimeWarning && styles.timerWarning,
               ]}>
-              {formatTime(timeRemaining)}
-            </Text>
+              <Ionicons name="time-outline" size={RFValue(18)} color="#fff" />
+              <Text
+                style={[
+                  styles.timerText,
+                  isTimeWarning && styles.timerWarningText,
+                ]}>
+                {formatTime(timeRemaining)}
+              </Text>
+            </View>
           </View>
-        </View>
+        ) : (
+          <View style={styles.timerSection} />
+        )}
 
         <View style={styles.examBadge}>
           <Text style={styles.examBadgeText}>

@@ -9,6 +9,11 @@ import {COLORS, FONTS} from '../../../../constants';
 export default function StageCard({item, index, gradient, number, onPress}) {
   const cardRef = useRef(null);
 
+  // التحقق من وجود item و gradient
+  if (!item || !gradient || !Array.isArray(gradient)) {
+    return null;
+  }
+
   const handlePress = () => {
     // Pulse animation
     cardRef?.current?.pulse(300);
@@ -63,7 +68,7 @@ export default function StageCard({item, index, gradient, number, onPress}) {
 
             {/* Main Title */}
             <Text style={styles.cardTitle} numberOfLines={2}>
-              {item.title}
+              {item?.title || item?.unit_name || item?.name || 'المرحلة'}
             </Text>
 
             {/* Motivational Text */}
